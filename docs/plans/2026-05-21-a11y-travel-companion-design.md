@@ -1,15 +1,15 @@
-# Accessibility Travel Companion — Design
+# AccessMate — Design
 
 **Date**: 2026-05-21
 **Status**: Approved for implementation planning
 **Owner**: Camilo Pires
-**Working name**: Accessibility Travel Companion (final name TBD)
+**Product name**: AccessMate
 
 ---
 
 ## 1. Overview
 
-A cross-platform travel companion app for disabled travellers in the **UK**, covering three reinforcing pillars in v1:
+**AccessMate** is a cross-platform travel companion app for disabled travellers in the **UK**, covering three reinforcing pillars in v1:
 
 1. **Directory** — curated, one-tap access to UK transport operators' accessibility lines, booking forms, and complaint routes.
 2. **Accessibility Passport** — a structured profile (chair specs, communication needs, sensory needs, meds, equipment, emergency contacts) the user can show staff or feed into bookings/complaints.
@@ -291,7 +291,8 @@ SharePost{ id, sourceIncidentId | sourceComplaintId, platform, redactedText, ima
 
 ## 9. Open questions / future work
 
-- **App naming + brand** — working title only; needs consultation with potential users.
+- **Brand identity** — name (AccessMate) chosen 2026-05-21. Logo, palette, voice/tone guide, and community validation of the name still to do.
+- **Domain / handles** — check availability of accessmate.app / accessmate.uk / @accessmate on X, Bluesky, Instagram, Threads.
 - **Content sourcing** — initial directory and complaint templates need legal review (Disability Rights UK / Disability Law Service partnership?).
 - **OTA content governance** — who can push template changes; review process.
 - **v2 candidates** — companion/carer mode, in-app social feed (with proper moderation budget), multi-language, additional countries, integration with operator APIs where they exist (e.g. Passenger Assist API if/when available), aggregate/data-led complaint trends.
