@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native build artefacts
+ios/Pods/
+ios/build/
+ios/.xcode.env.local
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro / Babel / TS caches
+.metro-health-check*
+.metro/
+.babel-cache/
+*.tsbuildinfo
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# Logs
+npm-debug.*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/settings.json.example
+*.swp
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+.maestro/
+
+# Cloudflare Worker
+.wrangler/
