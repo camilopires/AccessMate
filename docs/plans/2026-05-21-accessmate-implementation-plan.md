@@ -6,7 +6,7 @@
 
 **Architecture:** Single Expo monorepo (TypeScript). Local-first storage (expo-sqlite + expo-file-system). Bundled content (operators + complaint templates) shipped via Expo OTA. AI adapter selects Apple Foundation Models → Gemini Nano via AICore → Cloudflare Worker → template-only. Optional user-encrypted sync via OS document pickers. WCAG 2.2 AA as a release gate.
 
-**Tech Stack:** Expo SDK 50+, React Native, React Native Web, TypeScript, Expo Router, expo-sqlite, expo-file-system, Tamagui (UI), Zod (schemas), Vitest (unit/component), React Native Testing Library, Maestro (mobile E2E — added in Phase 3), Playwright + axe-core (web E2E + a11y), Cloudflare Workers + Hono (AI proxy — Phase 11), Anthropic Claude SDK.
+**Tech Stack:** Expo SDK 55 (pinned `~55.0.25`), React Native, React Native Web, TypeScript, Expo Router, expo-sqlite, expo-file-system, Tamagui (UI), Zod (schemas), **dual test runners — Vitest for pure-TS modules (schemas, repositories, pure logic), Jest with `jest-expo` preset for React Native components/screens** (React Native Testing Library on top of Jest), Maestro (mobile E2E — added in Phase 3), Playwright + axe-core (web E2E + a11y), Cloudflare Workers + Hono (AI proxy — Phase 11), Anthropic Claude SDK.
 
 **Design source:** `docs/plans/2026-05-21-a11y-travel-companion-design.md`
 
@@ -46,7 +46,7 @@ The reason: TDD task granularity is most valuable when the work is imminent. Dec
 
 Before Phase 1 Task 1, confirm you have:
 
-- **Node ≥20.x** (`node --version`) and **pnpm ≥9** (`pnpm --version`). Install pnpm: `npm i -g pnpm`.
+- **Node ≥20.x** (`node --version`) and **pnpm via corepack** (`corepack enable pnpm` — uses Node's built-in package-manager shim, no global install). Verify: `pnpm --version` returns ≥9.
 - **Git ≥2.40** (already in use).
 - **Xcode ≥15** with command-line tools (`xcode-select --install`). iOS Simulator runtime installed for iOS 17/18.
 - **Watchman** (`brew install watchman`) — Metro bundler needs it for file watching.
@@ -104,7 +104,7 @@ Expected: `node_modules/` populated; no peer-dep errors.
 
 **Step 3 — Pin the Expo SDK version**
 
-Open `package.json`. Confirm `"expo": "~50.0.0"` (or whatever the latest stable major is at time of running — pin exact minor with `~`, not `^`, so we don't auto-jump majors).
+Open `package.json`. Confirm `"expo": "~55.0.25"` (the current stable as of 2026-05-21). The `~` pins the minor so we don't auto-jump majors. Confirm peers (`react`, `react-native`, `react-dom`, `react-native-web`) match what `expo` SDK 55 expects (run `npx expo install --check` to validate).
 
 **Step 4 — Sanity check**
 
@@ -197,20 +197,23 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 ---
 
-### Task 1.3 — Configure Vitest + React Native Testing Library
+### Task 1.3 — Configure dual test runners (Vitest for pure-TS, Jest+RNTL for components)
+
+**Rationale:** React Native components don't run cleanly under Vitest+jsdom — they need RN's renderer and Expo's transform. We use Vitest for pure-TypeScript modules (schemas, repositories, utilities — fast feedback) and Jest with the `jest-expo` preset for any test that mounts an RN component or Expo Router screen. File-extension convention enforces the split: `*.test.ts` → Vitest; `*.test.tsx` → Jest.
 
 **Files:**
-- Create: `vitest.config.ts`, `tests/setup.ts`
-- Modify: `package.json` (test script + devDeps)
+- Create: `vitest.config.ts`, `jest.config.js`, `tests/vitest-setup.ts`, `tests/jest-setup.ts`, `tests/meta.test.ts`, `tests/meta.test.tsx`
+- Modify: `package.json` (devDeps + scripts)
 
-**Step 1 — Install**
+**Step 1 — Install both runners**
 
 ```bash
-pnpm add -D vitest @testing-library/react-native @testing-library/jest-dom \
-  @types/node jsdom
+pnpm add -D vitest jsdom @types/node \
+  jest jest-expo @testing-library/react-native @testing-library/jest-native \
+  react-test-renderer @types/react-test-renderer
 ```
 
-**Step 2 — `vitest.config.ts`**
+**Step 2 — `vitest.config.ts`** (pure-TS only)
 
 ```ts
 import { defineConfig } from 'vitest/config';
@@ -219,45 +222,86 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./tests/setup.ts'],
-    include: ['**/*.test.{ts,tsx}'],
-    exclude: ['node_modules', 'e2e', '.expo'],
+    setupFiles: ['./tests/vitest-setup.ts'],
+    include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
+    exclude: ['node_modules', 'e2e', '.expo', '**/*.test.tsx'],
   },
 });
 ```
 
-**Step 3 — `tests/setup.ts`**
+**Step 3 — `tests/vitest-setup.ts`**
 
 ```ts
-import '@testing-library/jest-dom';
+// Reserved for Vitest-only setup (none needed yet).
+export {};
 ```
 
-**Step 4 — Write a meta-test that fails first**
+**Step 4 — `jest.config.js`** (components/screens via jest-expo)
 
-Create `tests/meta.test.ts`:
+```js
+module.exports = {
+  preset: 'jest-expo',
+  setupFilesAfterEach: ['<rootDir>/tests/jest-setup.ts'],
+  testMatch: ['**/?(*.)+(test).tsx'],
+  transformIgnorePatterns: [
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@tamagui/.*|tamagui))',
+  ],
+};
+```
+
+**Step 5 — `tests/jest-setup.ts`**
+
+```ts
+import '@testing-library/jest-native/extend-expect';
+```
+
+**Step 6 — Meta-tests that prove both runners work**
+
+`tests/meta.test.ts` (Vitest, pure TS):
 
 ```ts
 import { describe, it, expect } from 'vitest';
 describe('vitest', () => {
-  it('runs', () => { expect(1 + 1).toBe(2); });
+  it('runs pure-TS tests', () => { expect(1 + 1).toBe(2); });
 });
 ```
 
-**Step 5 — Add script + run**
+`tests/meta.test.tsx` (Jest, React component):
 
-In `package.json`: `"test": "vitest run"`.
-
-```bash
-pnpm test
+```tsx
+import { render, screen } from '@testing-library/react-native';
+import { Text } from 'react-native';
+describe('jest + RNTL', () => {
+  it('renders RN components', () => {
+    render(<Text>hello</Text>);
+    expect(screen.getByText('hello')).toBeTruthy();
+  });
+});
 ```
 
-Expected: `1 passed`.
+**Step 7 — Add scripts**
 
-**Step 6 — Commit**
+In `package.json`:
+
+```json
+"test:unit": "vitest run",
+"test:rn":   "jest",
+"test":      "pnpm test:unit && pnpm test:rn"
+```
+
+**Step 8 — Run both, see them pass**
+
+```bash
+pnpm test:unit && pnpm test:rn
+```
+
+Expected: each reports 1 passed.
+
+**Step 9 — Commit**
 
 ```bash
 git add .
-git commit -m "chore: add vitest + react-native testing library
+git commit -m "chore: add dual test runners (vitest for pure-TS, jest+RNTL for components)
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```
@@ -306,7 +350,7 @@ describe('OperatorEntry schema', () => {
 **Step 3 — Run, see it fail**
 
 ```bash
-pnpm test src/content/schemas.test.ts
+pnpm test:unit src/content/schemas.test.ts
 ```
 
 Expected: FAIL — `Cannot find module './schemas'`.
@@ -344,7 +388,7 @@ export type OperatorEntry = z.infer<typeof OperatorEntry>;
 **Step 5 — Run, see it pass**
 
 ```bash
-pnpm test src/content/schemas.test.ts
+pnpm test:unit src/content/schemas.test.ts
 ```
 
 Expected: PASS (2 tests).
@@ -385,7 +429,7 @@ describe('loadBundledOperators', () => {
 **Step 2 — Run, see it fail**
 
 ```bash
-pnpm test src/content/operators
+pnpm test:unit src/content/operators
 ```
 
 Expected: FAIL — `Cannot find module './index'`.
@@ -430,7 +474,7 @@ export function loadBundledOperators(): OperatorEntry[] {
 **Step 5 — Run, see it pass**
 
 ```bash
-pnpm test src/content/operators
+pnpm test:unit src/content/operators
 ```
 
 Expected: PASS.
@@ -563,7 +607,7 @@ describe('BigActionButton', () => {
 **Step 2 — Run, see it fail**
 
 ```bash
-pnpm test src/components/BigActionButton
+pnpm test:rn src/components/BigActionButton
 ```
 
 Expected: FAIL.
@@ -607,7 +651,7 @@ const styles = StyleSheet.create({
 **Step 4 — Run, see it pass**
 
 ```bash
-pnpm test src/components/BigActionButton
+pnpm test:rn src/components/BigActionButton
 ```
 
 Expected: PASS (3 tests).
@@ -680,7 +724,7 @@ const styles = StyleSheet.create({
 **Step 3 — Run**
 
 ```bash
-pnpm test app/index
+pnpm test:rn app/index
 ```
 
 Expected: PASS.
@@ -761,7 +805,7 @@ const styles = StyleSheet.create({
 **Step 3 — Run + commit**
 
 ```bash
-pnpm test app/directory
+pnpm test:rn app/directory
 git add .
 git commit -m "feat(directory): add Directory list screen reading bundled operators
 
@@ -849,7 +893,7 @@ const styles = StyleSheet.create({
 **Step 3 — Run + commit**
 
 ```bash
-pnpm test app/directory
+pnpm test:rn app/directory
 git add .
 git commit -m "feat(directory): add operator detail with tap-to-call and tap-to-email
 
