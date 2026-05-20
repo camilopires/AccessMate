@@ -1,59 +1,69 @@
-# Dependencies
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
 node_modules/
-.pnp
-.pnp.js
 
 # Expo
 .expo/
-.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native build artefacts
-ios/Pods/
-ios/build/
-ios/.xcode.env.local
-android/.gradle/
-android/build/
-android/app/build/
-android/local.properties
+# Native
+.kotlin/
+*.orig.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 
-# Metro / Babel / TS caches
+# Metro
 .metro-health-check*
-.metro/
-.babel-cache/
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
 *.tsbuildinfo
 
-# Env / secrets
+app-example
+
+# generated native folders
+/ios
+/android
+
+# --- AccessMate additions ---
+
+# env (all variants, allow example)
 .env
 .env.*
 !.env.example
-*.pem
 
-# Logs
-npm-debug.*
-yarn-debug.log*
-yarn-error.log*
-*.log
-
-# Editor / OS
-.DS_Store
+# editors
 .idea/
 .vscode/*
 !.vscode/settings.json.example
 *.swp
 
-# Test output
+# test output
 coverage/
 playwright-report/
 test-results/
 .maestro/
 
-# Cloudflare Worker
+# build/cache
+.babel-cache/
+.metro/
+
+# cloudflare worker (Phase 9)
 .wrangler/
