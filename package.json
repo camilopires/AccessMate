@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:rn": "jest",
+    "test:e2e": "playwright test --config=e2e/web/playwright.config.ts",
     "test": "pnpm test:unit && pnpm test:rn"
   },
   "dependencies": {
@@ -47,7 +48,9 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@jest/globals": "^29.7.0",
+    "@playwright/test": "^1.60.0",
     "@testing-library/react-native": "^13.3.3",
     "@types/react": "~19.1.0",
     "@types/react-test-renderer": "^19.1.0",
