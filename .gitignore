@@ -64,6 +64,7 @@ test-results/
 # build/cache
 .babel-cache/
 .metro/
+.tamagui/
 
 # cloudflare worker (Phase 9)
 .wrangler/
