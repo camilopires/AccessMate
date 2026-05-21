@@ -1,18 +1,29 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { useRouter } from 'expo-router';
+import { BigActionButton } from '../src/components/BigActionButton';
 
-export default function PlaceholderHome() {
+export default function HomeScreen() {
+  const router = useRouter();
   return (
     <View style={styles.root}>
       <Text style={styles.h1} accessibilityRole="header">
         AccessMate
       </Text>
-      <Text style={styles.body}>Phase 1 — Task 1.1 scaffold check.</Text>
+      <View style={styles.actions}>
+        <BigActionButton
+          label="Plan a trip"
+          hint="Browse operator contacts"
+          onPress={() => router.push('/directory')}
+        />
+        <BigActionButton label="I'm travelling now" hint="Coming soon" onPress={() => {}} />
+        <BigActionButton label="Something went wrong" hint="Coming soon" onPress={() => {}} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, padding: 24, paddingTop: 80, backgroundColor: '#fff' },
+  root: { flex: 1, padding: 20, paddingTop: 80, gap: 28, backgroundColor: '#fff' },
   h1: { fontSize: 32, fontWeight: '700' },
-  body: { marginTop: 8, fontSize: 16, color: '#555' },
+  actions: { gap: 16 },
 });
