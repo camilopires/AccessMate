@@ -6,7 +6,7 @@
 
 **Architecture:** Single Expo monorepo (TypeScript). Local-first storage (expo-sqlite + expo-file-system). Bundled content (operators + complaint templates) shipped via Expo OTA. AI adapter selects Apple Foundation Models → Gemini Nano via AICore → Cloudflare Worker → template-only. Optional user-encrypted sync via OS document pickers. WCAG 2.2 AA as a release gate.
 
-**Tech Stack:** Expo SDK 55 (pinned `~55.0.25`), React Native, React Native Web, TypeScript, Expo Router, expo-sqlite, expo-file-system, Tamagui (UI), Zod (schemas), **dual test runners — Vitest for pure-TS modules (schemas, repositories, pure logic), Jest with `jest-expo` preset for React Native components/screens** (React Native Testing Library on top of Jest), Maestro (mobile E2E — added in Phase 3), Playwright + axe-core (web E2E + a11y), Cloudflare Workers + Hono (AI proxy — Phase 11), Anthropic Claude SDK.
+**Tech Stack:** Expo SDK 54 (`~54.0.33`, what `create-expo-app@latest` ships — fully supported), React Native 0.81, React 19.1, React Native Web 0.21, TypeScript, Expo Router, expo-sqlite, expo-file-system, Tamagui (UI), Zod (schemas), **dual test runners — Vitest 4 for pure-TS modules (schemas, repositories, pure logic), Jest 29 with `jest-expo@55` preset for React Native components/screens** (React Native Testing Library v13 on top of Jest; `react-test-renderer` must match React's exact version, currently `19.1.0`), Maestro (mobile E2E — added in Phase 3), Playwright + axe-core (web E2E + a11y), Cloudflare Workers + Hono (AI proxy — Phase 11), Anthropic Claude SDK.
 
 **Design source:** `docs/plans/2026-05-21-a11y-travel-companion-design.md`
 
@@ -62,6 +62,12 @@ If any of these are missing, install them now. The plan assumes they're in place
 
 # Phase 1 — Foundations + thin slice
 
+> **Execution status (2026-05-21):**
+> - **Batch 1 (Tasks 1.1–1.4) shipped.** Commits: `1c0a12a` (scaffold + strip demo), `8aebc5a` (prettier + jsx-a11y), `143262a` (dual test runners), `d39d3fb` (Zod OperatorEntry schema).
+> - **Next: Task 1.5** (bundle Avanti operator JSON + loader with TDD).
+> - **Resume check:** `git pull && pnpm install && pnpm test && pnpm lint && pnpm typecheck` should be green before starting Task 1.5.
+> - **Phase 1 status:** 4 / ~13 tasks complete.
+
 **Goal:** A running Expo app on iOS sim and web with a working Directory screen showing one real UK operator entry (Avanti West Coast). All foundational tooling (Vitest, RNTL, Playwright + axe, ESLint with jsx-a11y, Zod schemas, SQLite scaffolding) wired up. End state: any future task starts with "the test runner works, the type checker works, the a11y check works, push a button on iOS sim and you see Avanti's assistance number."
 
 **Acceptance criteria:**
@@ -104,7 +110,21 @@ Expected: `node_modules/` populated; no peer-dep errors.
 
 **Step 3 — Pin the Expo SDK version**
 
-Open `package.json`. Confirm `"expo": "~55.0.25"` (the current stable as of 2026-05-21). The `~` pins the minor so we don't auto-jump majors. Confirm peers (`react`, `react-native`, `react-dom`, `react-native-web`) match what `expo` SDK 55 expects (run `npx expo install --check` to validate).
+Open `package.json`. Confirm `"expo": "~54.0.33"` (what `create-expo-app@latest` shipped on 2026-05-21; SDK 55 also exists but is not the default-template default). The `~` pins the minor so we don't auto-jump majors. Confirm peers (`react`, `react-native`, `react-dom`, `react-native-web`) by running `npx expo install --check`.
+
+**Step 3b — Strip the demo template**
+
+`create-expo-app`'s default template ships a multi-tab demo with `app/(tabs)/`, `app/modal.tsx`, `components/`, `constants/`, `hooks/`, and `scripts/reset-project.js`. We don't want any of it. The bundled `pnpm run reset-project` script fails under pnpm v11 (its post-action `pnpm install` trips the build-script allowlist), so strip manually:
+
+```bash
+rm -rf "app/(tabs)" app/modal.tsx components constants hooks scripts
+```
+
+Then replace `app/_layout.tsx` with a minimal `Stack` (no theme provider, no anchor) and create a placeholder `app/index.tsx` that you'll replace in Task 1.8.
+
+**Step 3c — pnpm v11 build-script allowlist**
+
+Edit `pnpm-workspace.yaml` (created by the scaffold) to set `allowBuilds.unrs-resolver: true`. Without this, `pnpm install` exits with `ERR_PNPM_IGNORED_BUILDS` and any tool that runs install (incl. `expo start`'s deps check) will fail.
 
 **Step 4 — Sanity check**
 
@@ -208,10 +228,16 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 **Step 1 — Install both runners**
 
 ```bash
-pnpm add -D vitest jsdom @types/node \
-  jest jest-expo @testing-library/react-native @testing-library/jest-native \
-  react-test-renderer @types/react-test-renderer
+pnpm add -D vitest jsdom \
+  jest@^29 jest-expo @testing-library/react-native \
+  react-test-renderer@19.1.0 @types/react-test-renderer@19.1.0
 ```
+
+Pin notes:
+- `jest@^29` (not 30) because `jest-expo@55` was built against Jest 29 and trips on Jest 30's internal API rename (`clearMocksOnScope`).
+- `react-test-renderer@19.1.0` must match React's exact version. RNTL v13 validates this and refuses to load on mismatch.
+- Drop `@testing-library/jest-native` (deprecated; matchers are built-in to RNTL v13+).
+- Drop `@types/node` for now (Expo's TS setup includes the Node types it needs).
 
 **Step 2 — `vitest.config.ts`** (pure-TS only)
 
@@ -241,13 +267,12 @@ export {};
 ```js
 module.exports = {
   preset: 'jest-expo',
-  setupFilesAfterEach: ['<rootDir>/tests/jest-setup.ts'],
+  setupFiles: ['<rootDir>/tests/jest-setup.ts'],
   testMatch: ['**/?(*.)+(test).tsx'],
-  transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@tamagui/.*|tamagui))',
-  ],
 };
 ```
+
+Don't override `transformIgnorePatterns` — `jest-expo` already provides a correct one. Don't use `setupFilesAfterEach` (not a real Jest option); the correct key is `setupFiles`.
 
 **Step 5 — `tests/jest-setup.ts`**
 
@@ -393,7 +418,18 @@ pnpm test:unit src/content/schemas.test.ts
 
 Expected: PASS (2 tests).
 
-**Step 6 — Commit**
+**Step 6 — Disable `@typescript-eslint/no-redeclare` for the Zod pattern**
+
+The idiomatic Zod `export const X = z.object(...); export type X = z.infer<typeof X>` pattern reuses the same identifier in the value and type namespaces. TypeScript handles this fine; ESLint's no-redeclare rule doesn't. Add to `eslint.config.js`:
+
+```js
+rules: {
+  'prettier/prettier': 'error',
+  '@typescript-eslint/no-redeclare': 'off',
+},
+```
+
+**Step 7 — Commit**
 
 ```bash
 git add .
