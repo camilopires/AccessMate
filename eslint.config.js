@@ -12,6 +12,9 @@ module.exports = defineConfig([
     plugins: { prettier },
     rules: {
       'prettier/prettier': 'error',
+      // Idiomatic Zod pattern: `export const X = z.object(...); export type X = z.infer<typeof X>`.
+      // TypeScript handles value/type namespacing; ESLint's redeclare rule can't tell them apart.
+      '@typescript-eslint/no-redeclare': 'off',
     },
   },
   prettierConfig,
