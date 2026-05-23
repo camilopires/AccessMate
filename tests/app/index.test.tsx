@@ -11,11 +11,12 @@ jest.mock('../../src/incidents/factory', () => ({
 import HomeScreen from '../../app/index';
 
 describe('HomeScreen', () => {
-  it('renders the five big-tap actions', () => {
+  it('renders the six big-tap actions', () => {
     render(<HomeScreen />);
     expect(screen.getByRole('button', { name: /plan a trip/i })).toBeTruthy();
     expect(screen.getByRole('button', { name: /your accessibility passport/i })).toBeTruthy();
     expect(screen.getByRole('button', { name: /recent incidents/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^complaints$/i })).toBeTruthy();
     expect(screen.getByRole('button', { name: /i.?m travelling now/i })).toBeTruthy();
     expect(screen.getByRole('button', { name: /something went wrong/i })).toBeTruthy();
   });

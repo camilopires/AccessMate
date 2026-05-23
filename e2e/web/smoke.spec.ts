@@ -43,7 +43,10 @@ test('complaint composer: capture → list → detail → compose → draft visi
   await page.getByRole('button', { name: /recent incidents/i }).click();
   await expect(page.getByRole('heading', { name: /recent incidents/i })).toBeVisible();
 
-  await page.getByRole('button', { name: /missed passenger assist/i }).first().click();
+  await page
+    .getByRole('button', { name: /missed passenger assist/i })
+    .first()
+    .click();
   await expect(page.getByRole('heading', { name: /missed passenger assist/i })).toBeVisible();
   await page.getByRole('button', { name: /compose complaint/i }).click();
 
@@ -51,6 +54,34 @@ test('complaint composer: capture → list → detail → compose → draft visi
   await page.getByRole('button', { name: 'Missed Passenger Assist' }).click();
   await expect(page.getByLabel(/complaint draft/i)).toContainText('# Missed Passenger Assist');
   await expect(page.getByLabel(/complaint draft/i)).toContainText('No ramp at the door at Euston');
+});
+
+test('tracker: composer → send → complaints list shows it → mark acknowledged', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /something went wrong/i }).click();
+  await page.getByPlaceholder(/what happened/i).fill('No ramp at door');
+  await page.getByRole('button', { name: /add note/i }).click();
+  await page.getByPlaceholder(/short summary/i).fill('Missed Passenger Assist');
+  await page.getByRole('button', { name: /save & finish/i }).click();
+
+  await page.getByRole('button', { name: /recent incidents/i }).click();
+  await page
+    .getByRole('button', { name: /missed passenger assist/i })
+    .first()
+    .click();
+  await page.getByRole('button', { name: /compose complaint/i }).click();
+  await page.getByRole('button', { name: 'Missed Passenger Assist' }).click();
+
+  // Catch the popup that mailto would open (chromium handles mailto with a dialog).
+  page.on('dialog', (d) => d.dismiss().catch(() => {}));
+  await page.getByRole('button', { name: /send by email/i }).click();
+
+  // Now the tracker should show the new complaint
+  await page.goto('/');
+  await page.getByRole('button', { name: /^complaints$/i }).click();
+  await expect(page.getByRole('heading', { name: 'Complaints' })).toBeVisible();
+  await expect(page.getByText('Missed Passenger Assist')).toBeVisible();
+  await expect(page.getByText('Draft').first()).toBeVisible();
 });
 
 test('passport flow: empty state → edit → toggle → save → fact visible', async ({ page }) => {

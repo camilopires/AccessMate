@@ -13,6 +13,7 @@ import {
 import { getIncidentStore } from '../src/incidents/factory';
 import { getProfileStore } from '../src/profile/store';
 import { loadBundledOperators } from '../src/content/operators';
+import { getComplaintStore } from '../src/complaints/factory';
 import type { Profile } from '../src/profile/schemas';
 
 export default function ComposeRoute() {
@@ -20,6 +21,7 @@ export default function ComposeRoute() {
   const templates = useMemo(() => loadComplaintTemplates(), []);
   const incidentStore = useMemo(() => getIncidentStore(), []);
   const profileStore = useMemo(() => getProfileStore(), []);
+  const complaintStore = useMemo(() => getComplaintStore(), []);
   const operators = useMemo(() => loadBundledOperators(), []);
 
   const incident = useMemo(
@@ -81,6 +83,15 @@ export default function ComposeRoute() {
       onChangeDraft={setDraft}
       onSendEmail={() => {
         if (!selectedTemplate) return;
+        if (incident) {
+          complaintStore.create({
+            incidentId: incident.id,
+            templateId: selectedTemplate.id,
+            recipient,
+            regulator: selectedTemplate.regulator,
+            bodyMarkdown: draft,
+          });
+        }
         const subject = selectedTemplate.emailSubject.replace(
           /\{\{date\}\}/g,
           incident?.startedAtISO.slice(0, 10) ?? new Date().toISOString().slice(0, 10),

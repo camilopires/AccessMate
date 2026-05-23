@@ -46,4 +46,28 @@ export const migrations: readonly Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_media_incident ON media_refs(incident_id);
     `,
   },
+  {
+    version: 3,
+    description: 'create complaints table',
+    up: `
+      CREATE TABLE IF NOT EXISTS complaints (
+        id TEXT PRIMARY KEY,
+        incident_id TEXT NOT NULL REFERENCES incidents(id) ON DELETE CASCADE,
+        template_id TEXT NOT NULL,
+        status TEXT NOT NULL CHECK (status IN ('draft','sent','acknowledged','resolved','escalated')),
+        recipient TEXT,
+        regulator TEXT,
+        body_markdown TEXT,
+        response_markdown TEXT,
+        created_at TEXT NOT NULL,
+        sent_at TEXT,
+        acknowledged_at TEXT,
+        resolved_at TEXT,
+        escalated_at TEXT,
+        reminder_id TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_complaints_status ON complaints(status);
+      CREATE INDEX IF NOT EXISTS idx_complaints_incident ON complaints(incident_id);
+    `,
+  },
 ];
