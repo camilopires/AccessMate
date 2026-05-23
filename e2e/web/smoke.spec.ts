@@ -14,6 +14,23 @@ test('navigating to directory shows Avanti', async ({ page }) => {
   await expect(page.getByText('Avanti West Coast')).toBeVisible();
 });
 
+test('incident capture flow: start → note → save → home', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /something went wrong/i }).click();
+  await expect(page.getByRole('heading', { name: /something went wrong/i })).toBeVisible();
+  await expect(page.getByText(/0 items captured so far/i)).toBeVisible();
+
+  await page.getByPlaceholder(/what happened/i).fill('No ramp at the door');
+  await page.getByRole('button', { name: /add note/i }).click();
+  await expect(page.getByText(/1 item captured so far/i)).toBeVisible();
+
+  await page.getByPlaceholder(/short summary/i).fill('Denied boarding at Euston');
+  await page.getByRole('button', { name: /save & finish/i }).click();
+  await expect(page.getByRole('heading', { name: 'AccessMate' })).toBeVisible();
+  // No resume banner: the incident is completed.
+  await expect(page.getByText(/incident.* in progress/i)).toHaveCount(0);
+});
+
 test('passport flow: empty state → edit → toggle → save → fact visible', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /your accessibility passport/i }).click();
