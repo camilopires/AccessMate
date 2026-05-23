@@ -15,6 +15,11 @@ export default function HomeScreen() {
           hint="Browse operator contacts"
           onPress={() => router.push('/directory')}
         />
+        <BigActionButton
+          label="Your accessibility passport"
+          hint="Edit the profile you can show to staff"
+          onPress={() => router.push('/profile/edit')}
+        />
         <BigActionButton label="I'm travelling now" hint="Coming soon" onPress={() => {}} />
         <BigActionButton label="Something went wrong" hint="Coming soon" onPress={() => {}} />
       </View>
