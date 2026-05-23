@@ -32,6 +32,11 @@ export default function HomeScreen() {
           hint="Show the profile you can share with staff"
           onPress={() => router.push('/profile')}
         />
+        <BigActionButton
+          label="Recent incidents"
+          hint="Review what you've captured"
+          onPress={() => router.push('/incidents')}
+        />
         <BigActionButton label="I'm travelling now" hint="Coming soon" onPress={() => {}} />
         <BigActionButton
           label="Something went wrong"

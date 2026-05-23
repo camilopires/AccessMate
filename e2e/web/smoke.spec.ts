@@ -31,6 +31,28 @@ test('incident capture flow: start → note → save → home', async ({ page })
   await expect(page.getByText(/incident.* in progress/i)).toHaveCount(0);
 });
 
+test('complaint composer: capture → list → detail → compose → draft visible', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /something went wrong/i }).click();
+  await page.getByPlaceholder(/what happened/i).fill('No ramp at the door at Euston');
+  await page.getByRole('button', { name: /add note/i }).click();
+  await page.getByPlaceholder(/short summary/i).fill('Missed Passenger Assist');
+  await page.getByRole('button', { name: /save & finish/i }).click();
+
+  await expect(page.getByRole('heading', { name: 'AccessMate' })).toBeVisible();
+  await page.getByRole('button', { name: /recent incidents/i }).click();
+  await expect(page.getByRole('heading', { name: /recent incidents/i })).toBeVisible();
+
+  await page.getByRole('button', { name: /missed passenger assist/i }).first().click();
+  await expect(page.getByRole('heading', { name: /missed passenger assist/i })).toBeVisible();
+  await page.getByRole('button', { name: /compose complaint/i }).click();
+
+  await expect(page.getByRole('heading', { name: /compose complaint/i })).toBeVisible();
+  await page.getByRole('button', { name: 'Missed Passenger Assist' }).click();
+  await expect(page.getByLabel(/complaint draft/i)).toContainText('# Missed Passenger Assist');
+  await expect(page.getByLabel(/complaint draft/i)).toContainText('No ramp at the door at Euston');
+});
+
 test('passport flow: empty state → edit → toggle → save → fact visible', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /your accessibility passport/i }).click();
