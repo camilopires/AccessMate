@@ -1,15 +1,22 @@
 import { useMemo, useState } from 'react';
 import { Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { IncidentCaptureScreen } from '../../src/incidents/IncidentCaptureScreen';
 import { getIncidentStore } from '../../src/incidents/factory';
 import type { Incident } from '../../src/incidents/schemas';
 
 export default function IncidentCaptureRoute() {
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id?: string }>();
   const store = useMemo(() => getIncidentStore(), []);
-  const [incident] = useState<Incident>(() => store.start({}));
-  const [mediaCount, setMediaCount] = useState(0);
+  const [incident] = useState<Incident>(() => {
+    if (id) {
+      const existing = store.get(id);
+      if (existing && existing.status === 'in_progress') return existing;
+    }
+    return store.start({});
+  });
+  const [mediaCount, setMediaCount] = useState(() => store.mediaFor(incident.id).length);
 
   const finish = () => router.replace('/');
 

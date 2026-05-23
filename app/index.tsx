@@ -1,14 +1,26 @@
+import { useMemo, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { BigActionButton } from '../src/components/BigActionButton';
+import { ResumeBanner } from '../src/incidents/ResumeBanner';
+import { getIncidentStore } from '../src/incidents/factory';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const store = useMemo(() => getIncidentStore(), []);
+  const [inProgress] = useState(() => store.listInProgress());
+
+  const onResume = () => {
+    const latest = inProgress[inProgress.length - 1];
+    if (latest) router.push({ pathname: '/incident/capture', params: { id: latest.id } });
+  };
+
   return (
     <View style={styles.root}>
       <Text style={styles.h1} accessibilityRole="header">
         AccessMate
       </Text>
+      <ResumeBanner count={inProgress.length} onResume={onResume} />
       <View style={styles.actions}>
         <BigActionButton
           label="Plan a trip"
