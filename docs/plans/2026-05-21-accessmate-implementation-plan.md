@@ -62,6 +62,35 @@ If any of these are missing, install them now. The plan assumes they're in place
 
 # Phase 1 — Foundations + thin slice
 
+> **Batch 3 autonomous run (2026-05-23):** delivered Phases 2 through 9 in a
+> single uninterrupted session per the user's "continue until whole app is
+> done, don't wait for my approval" directive. See the per-phase notes below
+> and the closing handoff at the bottom of this section.
+>
+> **Headline numbers at the end of Batch 3:**
+> - Phases 1 → 8 done; Phase 9 (cloud proxy) scaffold landed but is inert
+>   until ANTHROPIC_API_KEY + a Cloudflare KV namespace are provisioned.
+> - Phases 10 / 11 / 12 are not started — they need native devices, ~20 real
+>   operators researched, and external audit + store accounts respectively.
+> - 86 vitest + 35 jest-RNTL component tests + 7 Playwright/axe E2E tests
+>   pass on every commit.
+> - 7 home screen actions wired (Plan a trip / Passport / Recent incidents /
+>   Complaints / Settings / I'm travelling now / Something went wrong) plus
+>   a Resume banner and a first-run Redirect to /onboarding.
+> - First-run wizard ships; localStorage on web, sqlite on native for every
+>   store (Profile / Incident / MediaRef / Complaint); web bundle dodges
+>   expo-sqlite's SharedArrayBuffer requirement via a Platform-aware factory.
+> - 10 v1 complaint templates authored citing Equality Act 2010, ATP (ORR),
+>   EU 1107/2006 (CAA), BSL Act 2022, Equality Act ss.165–166 (taxis), TfL/
+>   EHRC. Drafts assemble from incident + profile + template.
+>
+> **Resume check (run after a fresh /clear):**
+> ```
+> git pull && pnpm install
+> pnpm test && pnpm test:e2e && pnpm lint && pnpm typecheck
+> ```
+> All should be green.
+>
 > **Execution status (2026-05-21):**
 > - **Batch 1 (Tasks 1.1–1.4) shipped.** Commits: `1c0a12a` (scaffold + strip demo), `8aebc5a` (prettier + jsx-a11y), `143262a` (dual test runners), `d39d3fb` (Zod OperatorEntry schema).
 > - **Batch 2 (Tasks 1.5–1.11) shipped.** Commits:
@@ -1083,6 +1112,25 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 
 # Phase 2 — Accessibility Passport
 
+> **Batch 3 status:** **shipped (2026-05-23).** 7 commits:
+> - `2ed6dee` (2.1) Profile Zod schema with IATA battery fields
+> - `099b431` (2.2) expo-sqlite + Migrator (schema_version, ordered, TDD'd)
+> - `d31a5ad` (2.3) ProfileRepository get/upsert
+> - `876d950` (2.4) ProfileChip + ProfileEditor screen
+> - `3fea55e` (2.6) PDF export via expo-print + passportToHtml
+> - Plus the in-line PassportView (2.5) and `…store.ts` web-aware factory
+>   (web → localStorage, native → expo-sqlite) introduced in those commits.
+>
+> **Amendment captured for future phases:** expo-sqlite's web build imports
+> a `.wasm` file from `wa-sqlite/`. Two fixes were needed:
+> (a) `metro.config.js` adds `wasm` to `assetExts` so Metro resolves the
+> import; (b) at runtime the web build still needs SharedArrayBuffer
+> (cross-origin isolation via COOP/COEP) which the Expo dev server does
+> not set. AccessMate's `getProfileStore()` / `getIncidentStore()` /
+> `getComplaintStore()` factories therefore short-circuit to localStorage
+> on `Platform.OS === 'web'` and only `require('expo-sqlite')` on native.
+> This pattern is reused across all stores in Phases 3 / 5.
+
 **Goal:** A structured profile users can edit, view as a "passport" screen, and export as a printable PDF. All local, no network.
 
 **Tasks (to expand with `writing-plans` when Phase 1 is done):**
@@ -1100,6 +1148,25 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 ---
 
 # Phase 3 — Incident capture
+
+> **Batch 3 status:** **shipped (2026-05-23).** Notes captures + summary work on
+> web and native; **camera / audio / GPS native capture is deferred**
+> (requires a device — same reason 1.12 is deferred). The plan's permission
+> degradation + Maestro mobile E2E (item 8) are deferred with it.
+>
+> Commits:
+> - `c6bcf55` Install expo-camera / expo-audio (replaces deprecated
+>   expo-av in SDK 54) / expo-location / expo-file-system
+> - Migration v2 (incidents / media_refs / trips tables) bundled with the
+>   Incident schema + dual stores in the next two commits
+> - Incident + MediaRef Zod schemas with the `note↔textBody` /
+>   `photo|audio↔fileUri` refine; LocalStorageIncidentStore + SqliteIncidentStore
+>   + getIncidentStore() factory
+> - `03feb49` IncidentCaptureScreen + capture route (text notes attach;
+>   photo/audio buttons show "coming in a later phase" Alerts pending the
+>   native build)
+> - `0e28f6b` Resume banner on Home + `/incident/capture?id=` resume path
+> - `b7fd17a` E2E smoke
 
 **Goal:** A one-tap "Something went wrong" flow that creates an Incident row and lets the user attach photos, voice notes, GPS, and free-text under stress.
 
@@ -1120,6 +1187,16 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 
 # Phase 4 — Complaint composer (template-only, no AI yet)
 
+> **Batch 3 status:** **shipped (2026-05-23).** All 10 v1 templates authored.
+> Composer wires from incident detail; outputs (mailto / copy / PDF) wired
+> via expo-clipboard + expo-print.
+>
+> Reviewer note for future iteration: the legal paragraphs are concise and
+> cite real UK frameworks (Equality Act 2010, ATP / ORR, EU 1107/2006 /
+> CAA, BSL Act 2022, Equality Act ss.165–166, TfL / EHRC). They are NOT
+> legal advice — before public beta, run them past someone with a UK
+> disability-rights legal background.
+
 **Goal:** Turn an incident into a complete drafted complaint using scenario templates and the user's profile. No AI in this phase — proves the template engine is good enough on its own.
 
 **Tasks:**
@@ -1136,6 +1213,14 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 ---
 
 # Phase 5 — Complaint tracker + 8-week reminder
+
+> **Batch 3 status:** **shipped (2026-05-23).** Compose → Send creates a
+> draft Complaint row; status transitions Draft → Sent → Acknowledged →
+> Resolved / Escalated wired; response-paste-back field on detail screen.
+> `scheduleEightWeekReminder()` uses expo-notifications on native (no-op
+> on web). The escalation flow's regulator pointer (item 6) is plumbed
+> through ComplaintTemplate.regulator but the Directory still only has
+> Avanti — Phase 11 needs to populate the rest.
 
 **Goal:** Users track filed complaints and get reminded when it's time to escalate.
 
@@ -1154,6 +1239,17 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 
 # Phase 6 — Share composer
 
+> **Batch 3 status:** **shipped (2026-05-23) without the image-card item.**
+> Redaction engine (longest-cue-first staff-name masking + optional
+> operator + date/time masks) + per-platform sizer (X 280 / Bluesky 300 /
+> Threads 500 / Instagram unbounded) + deep-link composer
+> (twitter/intent, bsky/intent, threads/intent; Instagram copies to
+> clipboard since it has no public compose intent URL).
+>
+> **Deferred:** the `react-native-view-shot` image-card generator (plan
+> item 3). It needs the native bridge, so it lands when 1.12 / Phase 3
+> media capture come back online.
+
 **Goal:** From an incident or complaint, produce a redacted, accessible, platform-sized shareable post the user publishes on their own social account.
 
 **Tasks:**
@@ -1170,6 +1266,25 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 
 # Phase 7 — Settings (sync, AI prefs, accessibility, data control)
 
+> **Batch 3 status:** **shipped without the encrypted-sync item.** Settings
+> store (Zod-validated, localStorage on web, InMemory on native pending
+> the AsyncStorage wire-up below). /settings route exposes high-contrast,
+> reduce-motion, font-scale, AI-provider toggles, plus Export-JSON and
+> Wipe-device-data. exportAllData on web triggers a Blob download; on
+> native it uses `expo-file-system/legacy` + `expo-sharing` (the new SDK 54
+> File API didn't expose `documentDirectory` from the default export, so
+> the legacy entry point is what we use). wipeAllData drops sqlite tables
+> on native or clears `accessmate.*` localStorage keys on web.
+>
+> **Deferred (item 1):** AES-256 zip sync + Argon2id key derivation via
+> `react-native-quick-crypto`. The library is mobile-only and adds a
+> significant native build step — slot it back in alongside Phase 10.
+>
+> **Known caveat:** the InMemoryStorage native fallback means settings
+> reset on every app launch outside of a real device build. The right
+> follow-up is AsyncStorage (sync API doesn't fit but it's the typical
+> RN choice) or a tiny `app_settings` sqlite table.
+
 **Tasks:**
 
 1. Sync: AES-256 zip export of SQLite + media, written via `expo-document-picker`. Passphrase-derived key (Argon2id via `react-native-quick-crypto`).
@@ -1185,6 +1300,13 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 
 # Phase 8 — Onboarding wizard
 
+> **Batch 3 status:** **shipped (2026-05-23).** 5-step wizard at /onboarding.
+> First-run detection is a `Settings.onboardingComplete` flag; the Home
+> screen now renders an Expo Router `<Redirect href="/onboarding" />`
+> when that flag is false. (Used Redirect rather than a useEffect+
+> router.replace because navigating in an effect before the Stack mounts
+> throws "Attempted to navigate before mounting the Root Layout".)
+
 **Tasks:**
 
 1. 5-question wizard: primary access need, mobility aid (if any), communication preferences, who to contact in an emergency, notifications opt-in.
@@ -1197,6 +1319,28 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 ---
 
 # Phase 9 — Cloud AI proxy (Cloudflare Worker → Claude)
+
+> **Batch 3 status:** **scaffolded, inert.** `worker/src/index.ts` is a
+> Hono Worker with a Zod request schema, defensive staff-name redaction,
+> Anthropic call wired to `claude-haiku-4-5-20251001`, output validators
+> (rogue-citation regex + length cap), and a KV-backed per-IP rate limit.
+> `src/ai/polish.ts` exports `polishViaCloud({ endpoint, ... })` returning
+> null when the endpoint is empty or the upstream errors. 3 vitest tests
+> cover the client.
+>
+> **Not yet wired into the composer.** "Send by email" still uses the
+> template-only assembled draft. To enable cloud polish:
+> 1. `cd worker && pnpm install && wrangler kv:namespace create RATE_KV`
+>    (paste the id into `wrangler.toml`).
+> 2. `wrangler secret put ANTHROPIC_API_KEY` and provide your key.
+> 3. `wrangler deploy` — gives you a URL like
+>    `https://accessmate-polish.<account>.workers.dev/polish`.
+> 4. Add a settings field `polishEndpoint` (or wire via build env var) and
+>    call `polishViaCloud({ endpoint, ... })` from the composer between
+>    "Send by email" and the actual `openComplaintMailto` call.
+>
+> The Worker has its own `tsconfig.json` and is excluded from the app's
+> tsconfig so the two compile independently.
 
 **Goal:** A tiny, auditable cloud proxy that lets the app produce a polished complaint narrative when on-device AI is unavailable.
 
@@ -1218,6 +1362,13 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 
 # Phase 10 — On-device AI adapters
 
+> **Batch 3 status:** **not started — blocked on devices.** The Apple FM
+> module and Gemini Nano AICore module both need real native builds
+> (Expo dev client) and capable test devices (Apple Intelligence-ready
+> iPhone, Android with AICore). The Phase 9 client adapter is the
+> integration point — wire `polishViaAppleFM` / `polishViaGeminiNano`
+> alongside `polishViaCloud` under a single `aiPolish()` strategy.
+
 **Goal:** Replace cloud with on-device for capable devices. Apple FM (iOS) and Gemini Nano via AICore (Android).
 
 **Tasks:**
@@ -1236,6 +1387,15 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 
 # Phase 11 — OTA content + authoring workflow
 
+> **Batch 3 status:** **not started.** Directory still bundles only Avanti
+> West Coast (`src/content/operators/avanti-west-coast.json`). Adding
+> ~20 more operators is a research task (phone numbers, complaints
+> emails, accessibility URLs, regulator) more than a code task. The
+> schema (`src/content/schemas.ts → OperatorEntry`) is ready to absorb
+> them — each new operator is a JSON file alongside Avanti's and a line
+> in `src/content/operators/index.ts`. The OTA-update / Expo Updates /
+> CI URL-liveness check is the harder follow-up.
+
 **Goal:** Update operators and complaint templates without app-store review.
 
 **Tasks:**
@@ -1253,6 +1413,11 @@ Expected: tag visible at https://github.com/camilopires/AccessMate/releases.
 ---
 
 # Phase 12 — a11y audit, community user testing, public beta
+
+> **Batch 3 status:** **not started — needs external resources.** Paid
+> auditor + recruited paid testers + TestFlight + Play closed testing +
+> Vercel/Cloudflare web host + privacy policy + launch. Out of scope for
+> autonomous execution.
 
 **Tasks:**
 
