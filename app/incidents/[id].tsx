@@ -55,6 +55,11 @@ export default function IncidentDetailScreen() {
           hint="Open the complaint composer with this incident's facts"
           onPress={() => router.push({ pathname: '/compose', params: { incidentId: incident.id } })}
         />
+        <BigActionButton
+          label="Share publicly"
+          hint="Compose a redacted post for X / Bluesky / Threads / Instagram"
+          onPress={() => router.push({ pathname: '/share', params: { incidentId: incident.id } })}
+        />
       </View>
     </ScrollView>
   );

@@ -56,7 +56,9 @@ test('complaint composer: capture → list → detail → compose → draft visi
   await expect(page.getByLabel(/complaint draft/i)).toContainText('No ramp at the door at Euston');
 });
 
-test('tracker: composer → send → complaints list shows it → mark acknowledged', async ({ page }) => {
+test('tracker: composer → send → complaints list shows it → mark acknowledged', async ({
+  page,
+}) => {
   await page.goto('/');
   await page.getByRole('button', { name: /something went wrong/i }).click();
   await page.getByPlaceholder(/what happened/i).fill('No ramp at door');
