@@ -10,8 +10,11 @@ import FoundationModels
  * Bridges Apple's on-device Foundation Models LLM into JavaScript for
  * AccessMate's complaint polishing pipeline.
  *
- * Requires iOS 18.1+. All FoundationModels calls are gated by @available
- * so the module compiles fine for lower deployment targets — they simply
+ * Requires iOS 26.0+. (The `FoundationModels` framework public API
+ * landed in iOS 26 / WWDC25 — earlier Apple Intelligence releases did
+ * not expose `SystemLanguageModel` or `LanguageModelSession` as public
+ * Swift types.) All FoundationModels calls are gated by @available so
+ * the module compiles fine for lower deployment targets — they simply
  * return "unsupported-device" availability at runtime.
  *
  * Testing:
@@ -58,7 +61,7 @@ public enum AppleFmAvailability {
   /// `.available`.
   public static func isAvailableNow() -> Bool {
     #if canImport(FoundationModels)
-      if #available(iOS 18.1, *) {
+      if #available(iOS 26.0, *) {
         if case .available = SystemLanguageModel.default.availability {
           return true
         }
@@ -70,7 +73,7 @@ public enum AppleFmAvailability {
   /// Returns a JS-friendly dictionary describing availability.
   public static func payload() -> [String: Any] {
     #if canImport(FoundationModels)
-      if #available(iOS 18.1, *) {
+      if #available(iOS 26.0, *) {
         let availability = SystemLanguageModel.default.availability
         switch availability {
         case .available:
@@ -89,7 +92,7 @@ public enum AppleFmAvailability {
   }
 
   #if canImport(FoundationModels)
-    @available(iOS 18.1, *)
+    @available(iOS 26.0, *)
     static func mapReason(
       _ reason: SystemLanguageModel.Availability.UnavailableReason
     ) -> AppleFmReason {
@@ -109,12 +112,12 @@ public enum AppleFmAvailability {
 
 public enum AppleFmPolisher {
   /// Runs a polish via Apple Foundation Models. Throws
-  /// `AppleFmError.unsupportedOS` on iOS < 18.1, and
+  /// `AppleFmError.unsupportedOS` on iOS < 26.0, and
   /// `AppleFmError.unavailable(reason:)` when the model itself is not
   /// ready (Apple Intelligence disabled, model still downloading, etc).
   public static func polish(prompt: String, systemPrompt: String) async throws -> String {
     #if canImport(FoundationModels)
-      guard #available(iOS 18.1, *) else { throw AppleFmError.unsupportedOS }
+      guard #available(iOS 26.0, *) else { throw AppleFmError.unsupportedOS }
       let model = SystemLanguageModel.default
       switch model.availability {
       case .available:
