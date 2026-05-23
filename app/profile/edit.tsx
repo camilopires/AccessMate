@@ -17,7 +17,7 @@ export default function ProfileEditScreen() {
   const onSave = () => {
     try {
       repo.upsert(profile);
-      router.replace('/');
+      router.replace('/profile');
     } catch (e) {
       Alert.alert('Could not save', e instanceof Error ? e.message : 'Unknown error');
     }
