@@ -2,21 +2,19 @@ import { useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ProfileEditor } from '../../src/profile/ProfileEditor';
-import { ProfileRepository } from '../../src/profile/repository';
-import { ExpoSqliteAdapter } from '../../src/db/sqlite-adapter';
-import { getDatabase } from '../../src/db';
+import { getProfileStore } from '../../src/profile/store';
 import type { Profile } from '../../src/profile/schemas';
 
 const EMPTY: Profile = { emergencyContacts: [] };
 
 export default function ProfileEditScreen() {
   const router = useRouter();
-  const repo = useMemo(() => new ProfileRepository(new ExpoSqliteAdapter(getDatabase())), []);
-  const [profile, setProfile] = useState<Profile>(() => repo.get() ?? EMPTY);
+  const store = useMemo(() => getProfileStore(), []);
+  const [profile, setProfile] = useState<Profile>(() => store.get() ?? EMPTY);
 
   const onSave = () => {
     try {
-      repo.upsert(profile);
+      store.upsert(profile);
       router.replace('/profile');
     } catch (e) {
       Alert.alert('Could not save', e instanceof Error ? e.message : 'Unknown error');
