@@ -1,7 +1,13 @@
-import { View, Text, StyleSheet, Linking } from 'react-native';
+import { View, Text, StyleSheet, Linking, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { BigActionButton } from '../../src/components/BigActionButton';
 import { loadBundledOperators } from '../../src/content/operators';
+
+function openOrAlert(url: string, friendly: string) {
+  Linking.openURL(url).catch(() => {
+    Alert.alert('Could not open', friendly);
+  });
+}
 
 export default function OperatorDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,13 +23,18 @@ export default function OperatorDetail() {
       <BigActionButton
         label="Call Passenger Assistance"
         hint={operator.assistance.phone}
-        onPress={() => Linking.openURL(`tel:${operator.assistance.phone}`)}
+        onPress={() => openOrAlert(`tel:${operator.assistance.phone}`, operator.assistance.phone)}
       />
       {operator.complaintsRoute.primaryEmail && (
         <BigActionButton
           label="Email complaints team"
           hint={operator.complaintsRoute.primaryEmail}
-          onPress={() => Linking.openURL(`mailto:${operator.complaintsRoute.primaryEmail}`)}
+          onPress={() =>
+            openOrAlert(
+              `mailto:${operator.complaintsRoute.primaryEmail}`,
+              operator.complaintsRoute.primaryEmail!
+            )
+          }
         />
       )}
     </View>
