@@ -14,6 +14,11 @@ import { getIncidentStore } from '../src/incidents/factory';
 import { getProfileStore } from '../src/profile/store';
 import { loadBundledOperators } from '../src/content/operators';
 import { getComplaintStore } from '../src/complaints/factory';
+import { getSettingsStore } from '../src/settings/factory';
+import { aiPolish } from '../src/ai/strategy';
+import { polishViaAppleFm } from '../src/ai/apple-fm';
+import { defaultAppleFmModule } from '../src/ai/apple-fm.factory';
+import { polishViaCloud } from '../src/ai/polish';
 import type { Profile } from '../src/profile/schemas';
 
 export default function ComposeRoute() {
@@ -45,6 +50,12 @@ export default function ComposeRoute() {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draft, setDraft] = useState<string>('');
+  const [polishStatus, setPolishStatus] = useState<
+    'idle' | 'working' | 'apple-fm' | 'cloud' | 'none'
+  >('idle');
+
+  const settings = useMemo(() => getSettingsStore(), []);
+  const aiProvider = settings.get().aiProvider;
 
   const selectedTemplate = selectedId ? getComplaintTemplate(selectedId) : null;
   const operator = incident?.operatorId
@@ -74,6 +85,37 @@ export default function ComposeRoute() {
 
   const recipient = operator?.complaintsRoute.primaryEmail ?? '';
 
+  const polishEndpoint = ''; // Wire to Settings when the worker is deployed.
+
+  const onPolish =
+    aiProvider !== 'off' && selectedTemplate
+      ? async () => {
+          setPolishStatus('working');
+          const result = await aiPolish(
+            {
+              scenarioId: selectedTemplate.id,
+              narrativeText: draft,
+              profileExcerpt: undefined,
+            },
+            {
+              tryAppleFm: async (input) => {
+                if (aiProvider !== 'on-device' && aiProvider !== 'cloud') return null;
+                const module = defaultAppleFmModule();
+                if (!module) return null;
+                return polishViaAppleFm(input, { module });
+              },
+              tryCloud: async (input) => {
+                if (aiProvider !== 'cloud') return null;
+                if (!polishEndpoint) return null;
+                return polishViaCloud({ endpoint: polishEndpoint, ...input });
+              },
+            },
+          );
+          setPolishStatus(result.provider);
+          if (result.polished) setDraft(result.polished);
+        }
+      : undefined;
+
   return (
     <ComplaintComposerScreen
       templates={templates}
@@ -81,6 +123,8 @@ export default function ComposeRoute() {
       onSelectTemplate={onSelectTemplate}
       draftText={draft}
       onChangeDraft={setDraft}
+      onPolish={onPolish}
+      polishStatus={polishStatus}
       onSendEmail={() => {
         if (!selectedTemplate) return;
         if (incident) {

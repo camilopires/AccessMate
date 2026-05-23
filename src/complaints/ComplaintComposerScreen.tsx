@@ -11,6 +11,8 @@ interface Props {
   onSendEmail: () => void;
   onCopy: () => void;
   onExportPdf: () => void;
+  onPolish?: () => void;
+  polishStatus?: 'idle' | 'working' | 'apple-fm' | 'cloud' | 'none';
 }
 
 export function ComplaintComposerScreen({
@@ -22,6 +24,8 @@ export function ComplaintComposerScreen({
   onSendEmail,
   onCopy,
   onExportPdf,
+  onPolish,
+  polishStatus = 'idle',
 }: Props) {
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
@@ -65,6 +69,24 @@ export function ComplaintComposerScreen({
               {draftText}
             </Text>
           </View>
+          {onPolish && (
+            <View style={styles.section}>
+              <BigActionButton
+                label={polishStatus === 'working' ? 'Polishing…' : 'Polish with AI'}
+                hint="Improve the draft's clarity without changing the facts or citations"
+                onPress={onPolish}
+              />
+              {polishStatus === 'apple-fm' && (
+                <Text style={styles.note}>Polished on-device with Apple Foundation Models.</Text>
+              )}
+              {polishStatus === 'cloud' && (
+                <Text style={styles.note}>Polished by the cloud proxy.</Text>
+              )}
+              {polishStatus === 'none' && (
+                <Text style={styles.note}>No AI polish available; using your template draft.</Text>
+              )}
+            </View>
+          )}
           <View style={styles.section}>
             <BigActionButton
               label="Send by email"
@@ -110,4 +132,5 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
+  note: { fontSize: 14, color: '#444' },
 });
