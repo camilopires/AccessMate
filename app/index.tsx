@@ -42,6 +42,11 @@ export default function HomeScreen() {
           hint="Track your filed complaints"
           onPress={() => router.push('/complaints')}
         />
+        <BigActionButton
+          label="Settings"
+          hint="App preferences and your data"
+          onPress={() => router.push('/settings')}
+        />
         <BigActionButton label="I'm travelling now" hint="Coming soon" onPress={() => {}} />
         <BigActionButton
           label="Something went wrong"
