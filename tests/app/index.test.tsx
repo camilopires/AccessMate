@@ -8,6 +8,20 @@ jest.mock('../../src/incidents/factory', () => ({
   }),
 }));
 
+jest.mock('../../src/settings/factory', () => ({
+  getSettingsStore: () => ({
+    get: () => ({
+      fontScale: 1,
+      highContrast: false,
+      reduceMotion: false,
+      aiProvider: 'off',
+      onboardingComplete: true,
+    }),
+    update: () => {},
+    reset: () => {},
+  }),
+}));
+
 import HomeScreen from '../../app/index';
 
 describe('HomeScreen', () => {

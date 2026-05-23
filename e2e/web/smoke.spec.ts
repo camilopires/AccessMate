@@ -1,6 +1,28 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+// Skip the onboarding wizard for every test except the dedicated one below
+// by seeding localStorage before any navigation.
+test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.title.startsWith('onboarding')) return;
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem(
+        'accessmate.settings.v1',
+        JSON.stringify({
+          fontScale: 1,
+          highContrast: false,
+          reduceMotion: false,
+          aiProvider: 'off',
+          onboardingComplete: true,
+        })
+      );
+    } catch {
+      // ignore (e.g., in service-worker contexts)
+    }
+  });
+});
+
 test('home screen loads and passes axe', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'AccessMate' })).toBeVisible();
@@ -84,6 +106,13 @@ test('tracker: composer → send → complaints list shows it → mark acknowled
   await expect(page.getByRole('heading', { name: 'Complaints' })).toBeVisible();
   await expect(page.getByText('Missed Passenger Assist')).toBeVisible();
   await expect(page.getByText('Draft').first()).toBeVisible();
+});
+
+test('onboarding redirect on first run, Set up later returns home', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Welcome to AccessMate' })).toBeVisible();
+  await page.getByRole('button', { name: /set up later/i }).click();
+  await expect(page.getByRole('heading', { name: 'AccessMate' })).toBeVisible();
 });
 
 test('passport flow: empty state → edit → toggle → save → fact visible', async ({ page }) => {

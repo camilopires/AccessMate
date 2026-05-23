@@ -1,14 +1,21 @@
 import { useMemo, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { BigActionButton } from '../src/components/BigActionButton';
 import { ResumeBanner } from '../src/incidents/ResumeBanner';
 import { getIncidentStore } from '../src/incidents/factory';
+import { getSettingsStore } from '../src/settings/factory';
 
 export default function HomeScreen() {
   const router = useRouter();
   const store = useMemo(() => getIncidentStore(), []);
+  const settings = useMemo(() => getSettingsStore(), []);
   const [inProgress] = useState(() => store.listInProgress());
+  const [onboardingComplete] = useState(() => settings.get().onboardingComplete);
+
+  if (!onboardingComplete) {
+    return <Redirect href="/onboarding" />;
+  }
 
   const onResume = () => {
     const latest = inProgress[inProgress.length - 1];

@@ -8,6 +8,7 @@ export const Settings = z.object({
   highContrast: z.boolean(),
   reduceMotion: z.boolean(),
   aiProvider: AiProvider,
+  onboardingComplete: z.boolean(),
 });
 export type Settings = z.infer<typeof Settings>;
 
@@ -16,6 +17,7 @@ export const DEFAULTS: Settings = {
   highContrast: false,
   reduceMotion: false,
   aiProvider: 'off',
+  onboardingComplete: false,
 };
 
 const KEY = 'accessmate.settings.v1';
