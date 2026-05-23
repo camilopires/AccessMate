@@ -21,7 +21,11 @@ export default function HomeScreen() {
           onPress={() => router.push('/profile')}
         />
         <BigActionButton label="I'm travelling now" hint="Coming soon" onPress={() => {}} />
-        <BigActionButton label="Something went wrong" hint="Coming soon" onPress={() => {}} />
+        <BigActionButton
+          label="Something went wrong"
+          hint="Start capturing an incident"
+          onPress={() => router.push('/incident/capture')}
+        />
       </View>
     </View>
   );
