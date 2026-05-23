@@ -26,9 +26,7 @@ interface Draft {
 function toProfile(d: Draft): Profile {
   return {
     emergencyContacts:
-      d.contactName && d.contactPhone
-        ? [{ name: d.contactName, phone: d.contactPhone }]
-        : [],
+      d.contactName && d.contactPhone ? [{ name: d.contactName, phone: d.contactPhone }] : [],
     sensory: {
       isBlind: d.isBlind,
       isLowVision: d.isLowVision,
@@ -75,7 +73,7 @@ export default function OnboardingScreen() {
         Welcome to AccessMate
       </Text>
       <Text style={styles.note}>
-        Step {step} of 5. Skip anything you'd rather set up later.
+        Step {step} of 5. Skip anything you&apos;d rather set up later.
       </Text>
 
       {step === 1 && (
@@ -207,9 +205,7 @@ export default function OnboardingScreen() {
             selected={!!draft.notifications}
             onToggle={() => setDraft((d) => ({ ...d, notifications: !d.notifications }))}
           />
-          <Text style={styles.note}>
-            You can change this any time in Settings.
-          </Text>
+          <Text style={styles.note}>You can change this any time in Settings.</Text>
         </View>
       )}
 

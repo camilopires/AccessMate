@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }, testInfo) => {
           reduceMotion: false,
           aiProvider: 'off',
           onboardingComplete: true,
-        })
+        }),
       );
     } catch {
       // ignore (e.g., in service-worker contexts)

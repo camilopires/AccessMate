@@ -1,0 +1,12 @@
+name = "accessmate-polish"
+main = "src/index.ts"
+compatibility_date = "2026-05-23"
+
+# Required: bind a KV namespace for per-IP rate limiting.
+# Create one with `wrangler kv:namespace create RATE_KV` and paste its id below.
+# [[kv_namespaces]]
+# binding = "RATE_KV"
+# id = "REPLACE_ME"
+
+# Required secret: ANTHROPIC_API_KEY
+# Set it with: wrangler secret put ANTHROPIC_API_KEY
