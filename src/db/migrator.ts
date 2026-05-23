@@ -2,6 +2,7 @@ export interface SqliteAdapter {
   execSync(sql: string): void;
   runSync(sql: string, params?: unknown[]): void;
   getFirstSync<T = unknown>(sql: string, params?: unknown[]): T | null;
+  getAllSync<T = unknown>(sql: string, params?: unknown[]): T[];
 }
 
 export interface Migration {

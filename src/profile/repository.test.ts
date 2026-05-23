@@ -22,6 +22,10 @@ class InMemoryAdapter implements SqliteAdapter {
     }
     return null;
   }
+
+  getAllSync<T = unknown>(): T[] {
+    return [];
+  }
 }
 
 describe('ProfileRepository', () => {

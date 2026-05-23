@@ -21,6 +21,9 @@ class FakeAdapter implements SqliteAdapter {
     }
     return null;
   }
+  getAllSync<T>(): T[] {
+    return [];
+  }
 }
 
 const m1: Migration = {

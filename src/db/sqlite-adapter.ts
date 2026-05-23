@@ -15,4 +15,8 @@ export class ExpoSqliteAdapter implements SqliteAdapter {
   getFirstSync<T = unknown>(sql: string, params: unknown[] = []): T | null {
     return this.db.getFirstSync<T>(sql, ...(params as never[]));
   }
+
+  getAllSync<T = unknown>(sql: string, params: unknown[] = []): T[] {
+    return this.db.getAllSync<T>(sql, ...(params as never[]));
+  }
 }
