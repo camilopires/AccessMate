@@ -1,16 +1,27 @@
 import { useMemo, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
-import { BigActionButton } from '../src/components/BigActionButton';
-import { ResumeBanner } from '../src/incidents/ResumeBanner';
+import { AppShell } from '../src/components/AppShell';
+import { AppHeader } from '../src/components/AppHeader';
+import { DestinationCard } from '../src/components/DestinationCard';
+import { EmergencyCard } from '../src/components/EmergencyCard';
+import { AlertCard } from '../src/components/AlertCard';
+import { SectionLabel } from '../src/components/SectionLabel';
 import { getIncidentStore } from '../src/incidents/factory';
 import { getSettingsStore } from '../src/settings/factory';
+import { space } from '../src/theme';
+
+const TODAY_LABEL = new Date().toLocaleDateString('en-GB', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+});
 
 export default function HomeScreen() {
   const router = useRouter();
-  const store = useMemo(() => getIncidentStore(), []);
+  const incidents = useMemo(() => getIncidentStore(), []);
   const settings = useMemo(() => getSettingsStore(), []);
-  const [inProgress] = useState(() => store.listInProgress());
+  const [inProgress] = useState(() => incidents.listInProgress());
   const [onboardingComplete] = useState(() => settings.get().onboardingComplete);
 
   if (!onboardingComplete) {
@@ -23,50 +34,66 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.root}>
-      <Text style={styles.h1} accessibilityRole="header">
-        AccessMate
-      </Text>
-      <ResumeBanner count={inProgress.length} onResume={onResume} />
-      <View style={styles.actions}>
-        <BigActionButton
-          label="Plan a trip"
-          hint="Browse operator contacts"
+    <AppShell>
+      <AppHeader title="AccessMate" overline={TODAY_LABEL} />
+
+      {inProgress.length > 0 && (
+        <AlertCard
+          title={`${inProgress.length} incident${inProgress.length === 1 ? '' : 's'} in progress`}
+          caption="Pick up where you left off."
+          actionLabel="Resume capture"
+          onPress={onResume}
+        />
+      )}
+
+      <View style={styles.list}>
+        <SectionLabel>Travelling</SectionLabel>
+        <DestinationCard
+          index="01"
+          title="Plan a trip"
+          caption="Browse operator contacts and accessibility info"
           onPress={() => router.push('/directory')}
         />
-        <BigActionButton
-          label="Your accessibility passport"
-          hint="Show the profile you can share with staff"
+        <DestinationCard
+          index="02"
+          title="Your accessibility passport"
+          caption="Show staff the access profile you've set up"
           onPress={() => router.push('/profile')}
         />
-        <BigActionButton
-          label="Recent incidents"
-          hint="Review what you've captured"
+
+        <SectionLabel>If something happens</SectionLabel>
+        <DestinationCard
+          index="03"
+          title="Recent incidents"
+          caption="Review what you've captured"
           onPress={() => router.push('/incidents')}
         />
-        <BigActionButton
-          label="Complaints"
-          hint="Track your filed complaints"
+        <DestinationCard
+          index="04"
+          title="Complaints"
+          caption="Track what you've filed and what's overdue"
           onPress={() => router.push('/complaints')}
         />
-        <BigActionButton
-          label="Settings"
-          hint="App preferences and your data"
+
+        <SectionLabel>Setup</SectionLabel>
+        <DestinationCard
+          index="05"
+          title="Settings"
+          caption="App preferences, your data, and AI options"
           onPress={() => router.push('/settings')}
         />
-        <BigActionButton label="I'm travelling now" hint="Coming soon" onPress={() => {}} />
-        <BigActionButton
-          label="Something went wrong"
-          hint="Start capturing an incident"
-          onPress={() => router.push('/incident/capture')}
-        />
+        <DestinationCard title="I'm travelling now" caption="Coming soon" onPress={() => {}} />
       </View>
-    </View>
+
+      <EmergencyCard
+        title="Something went wrong"
+        caption="Start capturing what's happening, right now."
+        onPress={() => router.push('/incident/capture')}
+      />
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, padding: 20, paddingTop: 80, gap: 28, backgroundColor: '#fff' },
-  h1: { fontSize: 32, fontWeight: '700' },
-  actions: { gap: 16 },
+  list: { marginTop: space.sm },
 });

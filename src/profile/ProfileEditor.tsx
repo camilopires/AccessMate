@@ -1,6 +1,10 @@
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { AppShell } from '../components/AppShell';
+import { AppHeader } from '../components/AppHeader';
 import { ProfileChip } from '../components/ProfileChip';
 import { BigActionButton } from '../components/BigActionButton';
+import { SectionLabel } from '../components/SectionLabel';
+import { colors, space, type } from '../theme';
 import type { Profile } from './schemas';
 
 interface Props {
@@ -21,93 +25,84 @@ export function ProfileEditor({ profile, onChange, onSave }: Props) {
   const med = profile.medical ?? {};
 
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <Text style={styles.h1} accessibilityRole="header">
-        Your accessibility profile
-      </Text>
+    <AppShell>
+      <AppHeader title="Your accessibility profile" overline="Edit" />
 
       <Section title="Mobility">
-        <View style={styles.chipRow}>
-          <ProfileChip
-            label="Uses wheelchair"
-            selected={!!m.usesWheelchair}
-            onToggle={() => onChange({ ...profile, mobility: toggle(m, 'usesWheelchair') })}
-          />
-          <ProfileChip
-            label="Can transfer"
-            selected={!!m.canTransfer}
-            onToggle={() => onChange({ ...profile, mobility: toggle(m, 'canTransfer') })}
-          />
-        </View>
+        <ProfileChip
+          label="Uses wheelchair"
+          selected={!!m.usesWheelchair}
+          onToggle={() => onChange({ ...profile, mobility: toggle(m, 'usesWheelchair') })}
+        />
+        <ProfileChip
+          label="Can transfer"
+          selected={!!m.canTransfer}
+          onToggle={() => onChange({ ...profile, mobility: toggle(m, 'canTransfer') })}
+        />
       </Section>
 
       <Section title="Sensory">
-        <View style={styles.chipRow}>
-          <ProfileChip
-            label="Blind"
-            selected={!!s.isBlind}
-            onToggle={() => onChange({ ...profile, sensory: toggle(s, 'isBlind') })}
-          />
-          <ProfileChip
-            label="Low vision"
-            selected={!!s.isLowVision}
-            onToggle={() => onChange({ ...profile, sensory: toggle(s, 'isLowVision') })}
-          />
-          <ProfileChip
-            label="Deaf"
-            selected={!!s.isDeaf}
-            onToggle={() => onChange({ ...profile, sensory: toggle(s, 'isDeaf') })}
-          />
-          <ProfileChip
-            label="Hard of hearing"
-            selected={!!s.isHardOfHearing}
-            onToggle={() => onChange({ ...profile, sensory: toggle(s, 'isHardOfHearing') })}
-          />
-          <ProfileChip
-            label="Guide dog"
-            selected={!!s.hasGuideDog}
-            onToggle={() => onChange({ ...profile, sensory: toggle(s, 'hasGuideDog') })}
-          />
-        </View>
+        <ProfileChip
+          label="Blind"
+          selected={!!s.isBlind}
+          onToggle={() => onChange({ ...profile, sensory: toggle(s, 'isBlind') })}
+        />
+        <ProfileChip
+          label="Low vision"
+          selected={!!s.isLowVision}
+          onToggle={() => onChange({ ...profile, sensory: toggle(s, 'isLowVision') })}
+        />
+        <ProfileChip
+          label="Deaf"
+          selected={!!s.isDeaf}
+          onToggle={() => onChange({ ...profile, sensory: toggle(s, 'isDeaf') })}
+        />
+        <ProfileChip
+          label="Hard of hearing"
+          selected={!!s.isHardOfHearing}
+          onToggle={() => onChange({ ...profile, sensory: toggle(s, 'isHardOfHearing') })}
+        />
+        <ProfileChip
+          label="Guide dog"
+          selected={!!s.hasGuideDog}
+          onToggle={() => onChange({ ...profile, sensory: toggle(s, 'hasGuideDog') })}
+        />
       </Section>
 
       <Section title="Communication">
-        <View style={styles.chipRow}>
-          <ProfileChip
-            label="Prefers BSL"
-            selected={!!c.prefersBSL}
-            onToggle={() => onChange({ ...profile, communication: toggle(c, 'prefersBSL') })}
-          />
-          <ProfileChip
-            label="Prefers writing"
-            selected={!!c.prefersWriting}
-            onToggle={() => onChange({ ...profile, communication: toggle(c, 'prefersWriting') })}
-          />
-          <ProfileChip
-            label="Needs extra time"
-            selected={!!c.needsExtraTime}
-            onToggle={() => onChange({ ...profile, communication: toggle(c, 'needsExtraTime') })}
-          />
-        </View>
+        <ProfileChip
+          label="Prefers BSL"
+          selected={!!c.prefersBSL}
+          onToggle={() => onChange({ ...profile, communication: toggle(c, 'prefersBSL') })}
+        />
+        <ProfileChip
+          label="Prefers writing"
+          selected={!!c.prefersWriting}
+          onToggle={() => onChange({ ...profile, communication: toggle(c, 'prefersWriting') })}
+        />
+        <ProfileChip
+          label="Needs extra time"
+          selected={!!c.needsExtraTime}
+          onToggle={() => onChange({ ...profile, communication: toggle(c, 'needsExtraTime') })}
+        />
       </Section>
 
       <Section title="Medical">
-        <View style={styles.chipRow}>
-          <ProfileChip
-            label="Carries EpiPen"
-            selected={!!med.carriesEpiPen}
-            onToggle={() => onChange({ ...profile, medical: toggle(med, 'carriesEpiPen') })}
-          />
-        </View>
+        <ProfileChip
+          label="Carries EpiPen"
+          selected={!!med.carriesEpiPen}
+          onToggle={() => onChange({ ...profile, medical: toggle(med, 'carriesEpiPen') })}
+        />
       </Section>
 
-      <Section title="Emergency contacts">
+      <View style={styles.notesSection}>
+        <SectionLabel>Emergency contacts</SectionLabel>
         <Text style={styles.note} accessibilityRole="text">
           {profile.emergencyContacts && profile.emergencyContacts.length > 0
             ? `${profile.emergencyContacts.length} contact(s) on file`
             : 'No contacts yet.'}
         </Text>
-      </Section>
+      </View>
 
       <View style={styles.saveRow}>
         <BigActionButton
@@ -116,27 +111,23 @@ export function ProfileEditor({ profile, onChange, onSave }: Props) {
           onPress={onSave}
         />
       </View>
-    </ScrollView>
+    </AppShell>
   );
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.h2} accessibilityRole="header">
-        {title}
-      </Text>
-      {children}
+      <SectionLabel>{title}</SectionLabel>
+      <View style={styles.chipRow}>{children}</View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 16, paddingBottom: 48, gap: 8 },
-  h1: { fontSize: 28, fontWeight: '700', marginBottom: 12 },
-  h2: { fontSize: 20, fontWeight: '600', marginTop: 8, marginBottom: 8 },
-  section: { marginBottom: 12 },
+  section: { gap: space.xs },
+  notesSection: { gap: space.xs },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap' },
-  note: { fontSize: 16, color: '#444' },
-  saveRow: { marginTop: 16 },
+  note: { ...type.body, color: colors.ink.muted },
+  saveRow: { marginTop: space.lg },
 });

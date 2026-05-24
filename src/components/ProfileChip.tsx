@@ -1,4 +1,5 @@
 import { Pressable, Text, StyleSheet } from 'react-native';
+import { colors, radius, space, type } from '../theme';
 
 interface Props {
   label: string;
@@ -14,7 +15,11 @@ export function ProfileChip({ label, selected, onToggle, testID }: Props) {
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityState={{ checked: selected }}
-      style={[styles.chip, selected && styles.chipOn]}
+      style={({ pressed }) => [
+        styles.chip,
+        selected && styles.chipOn,
+        pressed && (selected ? styles.chipOnPressed : styles.chipPressed),
+      ]}
       testID={testID}
     >
       <Text style={[styles.label, selected && styles.labelOn]}>{label}</Text>
@@ -25,25 +30,23 @@ export function ProfileChip({ label, selected, onToggle, testID }: Props) {
 const styles = StyleSheet.create({
   chip: {
     minHeight: 44,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 22,
-    borderWidth: 2,
-    borderColor: '#1f6feb',
+    paddingHorizontal: space.base,
+    paddingVertical: space.sm + 2,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.line.hairline,
+    backgroundColor: colors.bg.raised,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: space.sm,
+    marginBottom: space.sm,
   },
+  chipPressed: { backgroundColor: colors.bg.sunken },
   chipOn: {
-    backgroundColor: '#1f6feb',
+    backgroundColor: colors.accent.base,
+    borderColor: colors.accent.base,
   },
-  label: {
-    color: '#1f6feb',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  labelOn: {
-    color: '#fff',
-  },
+  chipOnPressed: { backgroundColor: colors.accent.deep, borderColor: colors.accent.deep },
+  label: { ...type.bodyEmphasis, color: colors.ink.primary, fontSize: 15 },
+  labelOn: { color: colors.ink.onAccent },
 });

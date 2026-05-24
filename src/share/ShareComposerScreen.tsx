@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react';
-import { ScrollView, View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { AppShell } from '../components/AppShell';
+import { AppHeader } from '../components/AppHeader';
 import { BigActionButton } from '../components/BigActionButton';
 import { ProfileChip } from '../components/ProfileChip';
+import { SectionLabel } from '../components/SectionLabel';
 import { redactStaffNames, redact } from './redact';
 import { sizeForPlatform, PLATFORM_LIMITS } from './sizer';
 import type { SharePlatform } from './sizer';
 import { SUGGESTED_HASHTAGS } from './deep-links';
+import { colors, radius, space, type } from '../theme';
 
 interface Props {
   initialText: string;
@@ -31,16 +35,14 @@ export function ShareComposerScreen({ initialText, operatorName, onOpenShare }: 
     return sizeForPlatform(redacted, platform);
   }, [text, platform, maskOperator, operatorName, maskDateTime]);
 
+  const limit = PLATFORM_LIMITS[platform];
+
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <Text style={styles.h1} accessibilityRole="header">
-        Share
-      </Text>
+    <AppShell>
+      <AppHeader title="Share" overline="Compose post" />
 
       <View style={styles.section}>
-        <Text style={styles.label} accessibilityRole="header">
-          Platform
-        </Text>
+        <SectionLabel>Platform</SectionLabel>
         <View style={styles.row}>
           {PLATFORMS.map((p) => (
             <ProfileChip
@@ -54,7 +56,7 @@ export function ShareComposerScreen({ initialText, operatorName, onOpenShare }: 
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>What to share</Text>
+        <SectionLabel>What to share</SectionLabel>
         <TextInput
           value={text}
           onChangeText={setText}
@@ -65,27 +67,25 @@ export function ShareComposerScreen({ initialText, operatorName, onOpenShare }: 
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label} accessibilityRole="header">
-          Privacy
-        </Text>
-        {operatorName && (
+        <SectionLabel>Privacy</SectionLabel>
+        <View style={styles.row}>
+          {operatorName && (
+            <ProfileChip
+              label="Mask operator name"
+              selected={maskOperator}
+              onToggle={() => setMaskOperator((v) => !v)}
+            />
+          )}
           <ProfileChip
-            label="Mask operator name"
-            selected={maskOperator}
-            onToggle={() => setMaskOperator((v) => !v)}
+            label="Mask dates and times"
+            selected={maskDateTime}
+            onToggle={() => setMaskDateTime((v) => !v)}
           />
-        )}
-        <ProfileChip
-          label="Mask dates and times"
-          selected={maskDateTime}
-          onToggle={() => setMaskDateTime((v) => !v)}
-        />
+        </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label} accessibilityRole="header">
-          Suggested hashtags
-        </Text>
+        <SectionLabel>Suggested hashtags</SectionLabel>
         <View style={styles.row}>
           {SUGGESTED_HASHTAGS.map((h) => (
             <ProfileChip
@@ -105,10 +105,9 @@ export function ShareComposerScreen({ initialText, operatorName, onOpenShare }: 
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label} accessibilityRole="header">
-          What gets shared ({preview.length}
-          {PLATFORM_LIMITS[platform] !== Infinity ? `/${PLATFORM_LIMITS[platform]}` : ''})
-        </Text>
+        <SectionLabel trailing={`${preview.length}${limit !== Infinity ? ` / ${limit}` : ''}`}>
+          What gets shared
+        </SectionLabel>
         <Text style={styles.preview} testID="share-preview" accessibilityRole="text">
           {preview}
         </Text>
@@ -119,31 +118,30 @@ export function ShareComposerScreen({ initialText, operatorName, onOpenShare }: 
         hint="Open the platform compose window with this text"
         onPress={() => onOpenShare(platform, preview)}
       />
-    </ScrollView>
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 48, backgroundColor: '#fff', gap: 16 },
-  h1: { fontSize: 28, fontWeight: '700', color: '#000' },
-  section: { gap: 8 },
-  label: { fontSize: 18, fontWeight: '600', color: '#000' },
+  section: { gap: space.sm },
   row: { flexDirection: 'row', flexWrap: 'wrap' },
   input: {
-    borderWidth: 2,
-    borderColor: '#1f6feb',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    ...type.body,
+    borderWidth: 1,
+    borderColor: colors.line.hairline,
+    backgroundColor: colors.bg.raised,
+    borderRadius: radius.md,
+    paddingHorizontal: space.base,
+    paddingVertical: space.md,
     minHeight: 120,
-    color: '#000',
+    color: colors.ink.primary,
     textAlignVertical: 'top',
   },
   preview: {
-    fontSize: 16,
-    color: '#000',
-    backgroundColor: '#f6f8fa',
-    padding: 12,
-    borderRadius: 8,
+    ...type.body,
+    color: colors.ink.primary,
+    backgroundColor: colors.bg.sunken,
+    padding: space.md,
+    borderRadius: radius.md,
   },
 });

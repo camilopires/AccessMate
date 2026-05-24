@@ -1,8 +1,12 @@
 import { useMemo, useState } from 'react';
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { AppShell } from '../../src/components/AppShell';
+import { AppHeader } from '../../src/components/AppHeader';
 import { BigActionButton } from '../../src/components/BigActionButton';
+import { SectionLabel } from '../../src/components/SectionLabel';
 import { getIncidentStore } from '../../src/incidents/factory';
+import { colors, space, type } from '../../src/theme';
 import type { Incident, MediaRef } from '../../src/incidents/schemas';
 
 export default function IncidentDetailScreen() {
@@ -14,39 +18,38 @@ export default function IncidentDetailScreen() {
 
   if (!incident) {
     return (
-      <View style={styles.root}>
-        <Text style={styles.h1} accessibilityRole="header">
-          Not found
-        </Text>
-        <Text>This incident has been removed or never existed.</Text>
-      </View>
+      <AppShell>
+        <AppHeader title="Not found" overline="Incident" />
+        <Text style={styles.body}>This incident has been removed or never existed.</Text>
+      </AppShell>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <Text style={styles.h1} accessibilityRole="header">
-        {incident.summary ?? 'Untitled incident'}
-      </Text>
-      <Text style={styles.meta}>
-        {incident.startedAtISO.slice(0, 10)} · {incident.status}
-      </Text>
-      {incident.location?.label && (
-        <Text style={styles.meta}>Location: {incident.location.label}</Text>
-      )}
-      {incident.operatorId && <Text style={styles.meta}>Operator: {incident.operatorId}</Text>}
+    <AppShell>
+      <AppHeader
+        title={incident.summary ?? 'Untitled incident'}
+        overline={`${incident.startedAtISO.slice(0, 10)} · ${incident.status}`}
+      />
 
-      <Text style={styles.h2} accessibilityRole="header">
-        Captured
-      </Text>
+      <View style={styles.metaList}>
+        {incident.location?.label && (
+          <Text style={styles.meta}>Location · {incident.location.label}</Text>
+        )}
+        {incident.operatorId && <Text style={styles.meta}>Operator · {incident.operatorId}</Text>}
+      </View>
+
+      <SectionLabel>Captured</SectionLabel>
       {media.length === 0 ? (
         <Text style={styles.body}>No items captured.</Text>
       ) : (
-        media.map((m) => (
-          <Text key={m.id} style={styles.body}>
-            • {m.kind === 'note' ? m.textBody : `${m.kind} attached`}
-          </Text>
-        ))
+        <View style={styles.list}>
+          {media.map((m) => (
+            <Text key={m.id} style={styles.body}>
+              · {m.kind === 'note' ? m.textBody : `${m.kind} attached`}
+            </Text>
+          ))}
+        </View>
       )}
 
       <View style={styles.actions}>
@@ -58,19 +61,18 @@ export default function IncidentDetailScreen() {
         <BigActionButton
           label="Share publicly"
           hint="Compose a redacted post for X / Bluesky / Threads / Instagram"
+          variant="secondary"
           onPress={() => router.push({ pathname: '/share', params: { incidentId: incident.id } })}
         />
       </View>
-    </ScrollView>
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 48, backgroundColor: '#fff', gap: 6 },
-  root: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  h1: { fontSize: 26, fontWeight: '700', color: '#000', marginBottom: 4 },
-  h2: { fontSize: 20, fontWeight: '700', color: '#000', marginTop: 16, marginBottom: 8 },
-  meta: { fontSize: 16, color: '#444' },
-  body: { fontSize: 16, color: '#000', marginVertical: 2 },
-  actions: { marginTop: 24, gap: 12 },
+  metaList: { gap: 2 },
+  meta: { ...type.caption, color: colors.ink.muted },
+  body: { ...type.body, color: colors.ink.primary },
+  list: { gap: space.xs },
+  actions: { marginTop: space.xl, gap: space.sm },
 });

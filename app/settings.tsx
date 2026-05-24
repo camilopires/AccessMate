@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react';
-import { ScrollView, View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { AppShell } from '../src/components/AppShell';
+import { AppHeader } from '../src/components/AppHeader';
 import { BigActionButton } from '../src/components/BigActionButton';
 import { ProfileChip } from '../src/components/ProfileChip';
+import { SectionLabel } from '../src/components/SectionLabel';
 import { getSettingsStore } from '../src/settings/factory';
 import type { Settings, AiProvider } from '../src/settings/store';
 import { exportAllData, wipeAllData } from '../src/settings/data-ops';
+import { colors, space, type } from '../src/theme';
 
 const AI_PROVIDERS: { id: AiProvider; label: string }[] = [
   { id: 'off', label: 'AI off' },
@@ -46,26 +50,24 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <Text style={styles.h1} accessibilityRole="header">
-        Settings
-      </Text>
+    <AppShell>
+      <AppHeader title="Settings" overline="Preferences" />
 
       <View style={styles.section}>
-        <Text style={styles.label} accessibilityRole="header">
-          Accessibility
-        </Text>
-        <ProfileChip
-          label="High contrast"
-          selected={settings.highContrast}
-          onToggle={() => update({ highContrast: !settings.highContrast })}
-        />
-        <ProfileChip
-          label="Reduce motion"
-          selected={settings.reduceMotion}
-          onToggle={() => update({ reduceMotion: !settings.reduceMotion })}
-        />
-        <Text style={styles.label}>Font scale: {settings.fontScale.toFixed(1)}x</Text>
+        <SectionLabel>Accessibility</SectionLabel>
+        <View style={styles.row}>
+          <ProfileChip
+            label="High contrast"
+            selected={settings.highContrast}
+            onToggle={() => update({ highContrast: !settings.highContrast })}
+          />
+          <ProfileChip
+            label="Reduce motion"
+            selected={settings.reduceMotion}
+            onToggle={() => update({ reduceMotion: !settings.reduceMotion })}
+          />
+        </View>
+        <Text style={styles.caption}>Font scale · {settings.fontScale.toFixed(1)}x</Text>
         <View style={styles.row}>
           {[1.0, 1.2, 1.4, 1.6, 2.0].map((s) => (
             <ProfileChip
@@ -79,9 +81,7 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label} accessibilityRole="header">
-          AI provider
-        </Text>
+        <SectionLabel>AI provider</SectionLabel>
         <View style={styles.row}>
           {AI_PROVIDERS.map((p) => (
             <ProfileChip
@@ -92,19 +92,18 @@ export default function SettingsScreen() {
             />
           ))}
         </View>
-        <Text style={styles.note}>
-          On-device and cloud AI will be enabled in a later release. The toggle here records your
-          preference so future builds default to it.
+        <Text style={styles.caption}>
+          On-device and cloud AI light up the &ldquo;Polish with AI&rdquo; button in the complaint
+          composer. Stays off by default.
         </Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label} accessibilityRole="header">
-          Your data
-        </Text>
+        <SectionLabel>Your data</SectionLabel>
         <BigActionButton
           label="Export all data (JSON)"
           hint="Download every saved profile, incident, and complaint"
+          variant="secondary"
           onPress={() => {
             exportAllData().catch((e) =>
               Alert.alert('Export failed', e instanceof Error ? e.message : 'Unknown error'),
@@ -114,29 +113,26 @@ export default function SettingsScreen() {
         <BigActionButton
           label="Wipe device data"
           hint="Permanently delete all locally stored AccessMate data"
+          variant="ghost"
           onPress={onWipe}
         />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label} accessibilityRole="header">
-          About
-        </Text>
-        <Text style={styles.note}>
+        <SectionLabel>About</SectionLabel>
+        <Text style={styles.body}>
           AccessMate is an accessibility-first travel companion. All data stays on your device
           unless you explicitly share or export it. Encrypted cross-device sync is planned for the
           native release.
         </Text>
       </View>
-    </ScrollView>
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 48, backgroundColor: '#fff', gap: 16 },
-  h1: { fontSize: 28, fontWeight: '700', color: '#000' },
-  section: { gap: 8 },
-  label: { fontSize: 18, fontWeight: '600', color: '#000' },
+  section: { gap: space.sm },
   row: { flexDirection: 'row', flexWrap: 'wrap' },
-  note: { fontSize: 14, color: '#444' },
+  caption: { ...type.caption, color: colors.ink.muted },
+  body: { ...type.body, color: colors.ink.primary },
 });

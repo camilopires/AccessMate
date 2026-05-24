@@ -1,40 +1,30 @@
-import { FlatList, Text, Pressable, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { AppShell } from '../../src/components/AppShell';
+import { AppHeader } from '../../src/components/AppHeader';
+import { DestinationCard } from '../../src/components/DestinationCard';
 import { loadBundledOperators } from '../../src/content/operators';
 
 export default function DirectoryScreen() {
   const router = useRouter();
   const operators = loadBundledOperators();
   return (
-    <FlatList
-      data={operators}
-      keyExtractor={(o) => o.id}
-      contentContainerStyle={styles.list}
-      renderItem={({ item }) => (
-        <Pressable
-          onPress={() => router.push(`/directory/${item.id}`)}
-          accessibilityRole="button"
-          accessibilityLabel={`${item.name}, ${item.mode}`}
-          style={styles.row}
-        >
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.mode}>{item.mode.toUpperCase()}</Text>
-        </Pressable>
-      )}
-    />
+    <AppShell>
+      <AppHeader
+        title="Operators"
+        overline="Plan a trip"
+        subtitle={`${operators.length} bundled operator${operators.length === 1 ? '' : 's'}. More via OTA later.`}
+      />
+      <View>
+        {operators.map((item) => (
+          <DestinationCard
+            key={item.id}
+            title={item.name}
+            caption={item.mode.toUpperCase()}
+            onPress={() => router.push(`/directory/${item.id}`)}
+          />
+        ))}
+      </View>
+    </AppShell>
   );
 }
-
-const styles = StyleSheet.create({
-  list: { padding: 20, gap: 12 },
-  row: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e1e4e8',
-    backgroundColor: '#fff',
-  },
-  name: { fontSize: 18, fontWeight: '600' },
-  mode: { marginTop: 4, fontSize: 12, color: '#57606a', letterSpacing: 1 },
-});

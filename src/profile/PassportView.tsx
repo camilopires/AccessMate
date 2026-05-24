@@ -1,5 +1,9 @@
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { AppShell } from '../components/AppShell';
+import { AppHeader } from '../components/AppHeader';
 import { BigActionButton } from '../components/BigActionButton';
+import { SectionLabel } from '../components/SectionLabel';
+import { colors, space, type } from '../theme';
 import type { Profile } from './schemas';
 
 interface Props {
@@ -21,7 +25,6 @@ function isEmpty(p: Profile): boolean {
 }
 
 function describeWheelchairType(t?: string): string | null {
-  if (!t) return null;
   if (t === 'powered') return 'Powered wheelchair';
   if (t === 'manual') return 'Manual wheelchair';
   if (t === 'mobility-scooter') return 'Mobility scooter';
@@ -48,17 +51,15 @@ function describeBattery(p: Profile): string | null {
 export function PassportView({ profile, onEdit, onExport }: Props) {
   if (isEmpty(profile)) {
     return (
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.h1} accessibilityRole="header">
-          Accessibility passport
-        </Text>
+      <AppShell>
+        <AppHeader title="Accessibility passport" overline="Show staff" />
         <Text style={styles.empty}>Your passport is empty. Add details to share with staff.</Text>
         <BigActionButton
           label="Edit profile"
           hint="Fill in your accessibility profile"
           onPress={onEdit}
         />
-      </ScrollView>
+      </AppShell>
     );
   }
 
@@ -69,10 +70,8 @@ export function PassportView({ profile, onEdit, onExport }: Props) {
   const bb = profile.blueBadge;
 
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <Text style={styles.h1} accessibilityRole="header">
-        Accessibility passport
-      </Text>
+    <AppShell>
+      <AppHeader title="Accessibility passport" overline="Show staff" />
 
       {m && (
         <Section title="Mobility">
@@ -156,6 +155,7 @@ export function PassportView({ profile, onEdit, onExport }: Props) {
         <BigActionButton
           label="Edit profile"
           hint="Update your accessibility profile"
+          variant="secondary"
           onPress={onEdit}
         />
         <BigActionButton
@@ -164,17 +164,15 @@ export function PassportView({ profile, onEdit, onExport }: Props) {
           onPress={onExport}
         />
       </View>
-    </ScrollView>
+    </AppShell>
   );
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.h2} accessibilityRole="header">
-        {title}
-      </Text>
-      {children}
+      <SectionLabel>{title}</SectionLabel>
+      <View style={styles.factList}>{children}</View>
     </View>
   );
 }
@@ -188,11 +186,9 @@ function Fact({ text }: { text: string }) {
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 48, gap: 12, backgroundColor: '#fff' },
-  h1: { fontSize: 32, fontWeight: '700', color: '#000', marginBottom: 8 },
-  h2: { fontSize: 24, fontWeight: '700', color: '#000', marginTop: 8, marginBottom: 8 },
-  fact: { fontSize: 20, color: '#000', lineHeight: 28, marginBottom: 4 },
-  empty: { fontSize: 20, color: '#000', marginVertical: 16 },
-  section: { marginBottom: 8 },
-  actions: { gap: 12, marginTop: 24 },
+  empty: { ...type.body, color: colors.ink.muted, marginVertical: space.md },
+  section: { gap: space.xs },
+  factList: { gap: space.xs },
+  fact: { ...type.body, color: colors.ink.primary, fontSize: 18, lineHeight: 26 },
+  actions: { gap: space.sm, marginTop: space.xl },
 });

@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react';
-import { ScrollView, View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { AppShell } from '../src/components/AppShell';
+import { AppHeader } from '../src/components/AppHeader';
 import { BigActionButton } from '../src/components/BigActionButton';
 import { ProfileChip } from '../src/components/ProfileChip';
+import { SectionLabel } from '../src/components/SectionLabel';
 import { getSettingsStore } from '../src/settings/factory';
 import { getProfileStore } from '../src/profile/store';
 import type { Profile } from '../src/profile/schemas';
+import { colors, radius, space, type } from '../src/theme';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -44,6 +48,14 @@ function toProfile(d: Draft): Profile {
   };
 }
 
+const STEP_TITLES: Record<Step, string> = {
+  1: 'Your primary access need',
+  2: 'Mobility aid (if any)',
+  3: 'Communication preferences',
+  4: 'Emergency contact',
+  5: 'Notifications',
+};
+
 export default function OnboardingScreen() {
   const router = useRouter();
   const settings = useMemo(() => getSettingsStore(), []);
@@ -61,26 +73,29 @@ export default function OnboardingScreen() {
     router.replace('/');
   };
 
-  const next = (patch: Partial<Draft>) => {
-    setDraft((d) => ({ ...d, ...patch }));
+  const next = () => {
     if (step === 5) finish();
     else setStep((s) => (s + 1) as Step);
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <Text style={styles.h1} accessibilityRole="header">
-        Welcome to AccessMate
-      </Text>
-      <Text style={styles.note}>
-        Step {step} of 5. Skip anything you&apos;d rather set up later.
-      </Text>
+    <AppShell>
+      <AppHeader
+        title="Welcome to AccessMate"
+        overline={`Setup — Step ${step} of 5`}
+        subtitle="Skip anything you'd rather set up later. You can always come back from Settings."
+      />
 
-      {step === 1 && (
-        <View style={styles.section}>
-          <Text style={styles.h2} accessibilityRole="header">
-            Your primary access need
-          </Text>
+      <View style={styles.progress}>
+        {[1, 2, 3, 4, 5].map((s) => (
+          <View key={s} style={[styles.tick, s <= step && styles.tickActive]} />
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <SectionLabel>{STEP_TITLES[step]}</SectionLabel>
+
+        {step === 1 && (
           <View style={styles.row}>
             <ProfileChip
               label="Blind"
@@ -103,14 +118,9 @@ export default function OnboardingScreen() {
               onToggle={() => setDraft((d) => ({ ...d, isHardOfHearing: !d.isHardOfHearing }))}
             />
           </View>
-        </View>
-      )}
+        )}
 
-      {step === 2 && (
-        <View style={styles.section}>
-          <Text style={styles.h2} accessibilityRole="header">
-            Mobility aid (if any)
-          </Text>
+        {step === 2 && (
           <View style={styles.row}>
             <ProfileChip
               label="Manual wheelchair"
@@ -144,14 +154,9 @@ export default function OnboardingScreen() {
               }
             />
           </View>
-        </View>
-      )}
+        )}
 
-      {step === 3 && (
-        <View style={styles.section}>
-          <Text style={styles.h2} accessibilityRole="header">
-            Communication preferences
-          </Text>
+        {step === 3 && (
           <View style={styles.row}>
             <ProfileChip
               label="Prefers BSL"
@@ -169,85 +174,87 @@ export default function OnboardingScreen() {
               onToggle={() => setDraft((d) => ({ ...d, needsExtraTime: !d.needsExtraTime }))}
             />
           </View>
-        </View>
-      )}
+        )}
 
-      {step === 4 && (
-        <View style={styles.section}>
-          <Text style={styles.h2} accessibilityRole="header">
-            Emergency contact
-          </Text>
-          <TextInput
-            placeholder="Name"
-            accessibilityLabel="Emergency contact name"
-            value={draft.contactName ?? ''}
-            onChangeText={(t) => setDraft((d) => ({ ...d, contactName: t }))}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Phone (e.g. +44 7700 900123)"
-            accessibilityLabel="Emergency contact phone"
-            value={draft.contactPhone ?? ''}
-            onChangeText={(t) => setDraft((d) => ({ ...d, contactPhone: t }))}
-            style={styles.input}
-            keyboardType="phone-pad"
-          />
-        </View>
-      )}
+        {step === 4 && (
+          <View style={styles.fields}>
+            <TextInput
+              placeholder="Name"
+              placeholderTextColor={colors.ink.soft}
+              accessibilityLabel="Emergency contact name"
+              value={draft.contactName ?? ''}
+              onChangeText={(t) => setDraft((d) => ({ ...d, contactName: t }))}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Phone (e.g. +44 7700 900123)"
+              placeholderTextColor={colors.ink.soft}
+              accessibilityLabel="Emergency contact phone"
+              value={draft.contactPhone ?? ''}
+              onChangeText={(t) => setDraft((d) => ({ ...d, contactPhone: t }))}
+              style={styles.input}
+              keyboardType="phone-pad"
+            />
+          </View>
+        )}
 
-      {step === 5 && (
-        <View style={styles.section}>
-          <Text style={styles.h2} accessibilityRole="header">
-            Notifications
-          </Text>
-          <ProfileChip
-            label="Allow reminders (e.g. 8-week escalate)"
-            selected={!!draft.notifications}
-            onToggle={() => setDraft((d) => ({ ...d, notifications: !d.notifications }))}
-          />
-          <Text style={styles.note}>You can change this any time in Settings.</Text>
-        </View>
-      )}
+        {step === 5 && (
+          <View style={styles.row}>
+            <ProfileChip
+              label="Allow reminders (e.g. 8-week escalate)"
+              selected={!!draft.notifications}
+              onToggle={() => setDraft((d) => ({ ...d, notifications: !d.notifications }))}
+            />
+          </View>
+        )}
+      </View>
 
       <View style={styles.actions}>
         <BigActionButton
           label={step === 5 ? 'Finish' : 'Next'}
           hint={step === 5 ? 'Save your profile and finish setup' : 'Go to the next step'}
-          onPress={() => next({})}
+          onPress={next}
         />
         <BigActionButton
           label="Skip this step"
           hint="Move to the next step without saving this answer"
+          variant="secondary"
           onPress={() => (step === 5 ? finish() : setStep((s) => (s + 1) as Step))}
         />
         <BigActionButton
           label="Set up later"
           hint="Skip onboarding entirely and go to the home screen"
+          variant="ghost"
           onPress={() => {
             settings.update({ onboardingComplete: true });
             router.replace('/');
           }}
         />
       </View>
-    </ScrollView>
+
+      {step === 5 && <Text style={styles.note}>You can change this any time in Settings.</Text>}
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 48, backgroundColor: '#fff', gap: 16 },
-  h1: { fontSize: 28, fontWeight: '700', color: '#000' },
-  h2: { fontSize: 20, fontWeight: '700', color: '#000' },
-  section: { gap: 8 },
+  progress: { flexDirection: 'row', gap: 6, marginTop: space.xs },
+  tick: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.line.hairline },
+  tickActive: { backgroundColor: colors.accent.base },
+  section: { gap: space.sm },
   row: { flexDirection: 'row', flexWrap: 'wrap' },
-  note: { fontSize: 14, color: '#444' },
+  fields: { gap: space.md },
   input: {
-    borderWidth: 2,
-    borderColor: '#1f6feb',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    minHeight: 44,
-    color: '#000',
+    ...type.body,
+    borderWidth: 1,
+    borderColor: colors.line.hairline,
+    backgroundColor: colors.bg.raised,
+    borderRadius: radius.md,
+    paddingHorizontal: space.base,
+    paddingVertical: space.md,
+    minHeight: 48,
+    color: colors.ink.primary,
   },
-  actions: { gap: 8, marginTop: 16 },
+  actions: { gap: space.sm, marginTop: space.lg },
+  note: { ...type.caption, color: colors.ink.muted, textAlign: 'center' },
 });

@@ -1,5 +1,10 @@
-import { ScrollView, View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { AppShell } from '../components/AppShell';
+import { AppHeader } from '../components/AppHeader';
 import { BigActionButton } from '../components/BigActionButton';
+import { DestinationCard } from '../components/DestinationCard';
+import { SectionLabel } from '../components/SectionLabel';
+import { colors, radius, space, type } from '../theme';
 import type { ComplaintTemplate } from './schemas';
 
 interface Props {
@@ -28,21 +33,17 @@ export function ComplaintComposerScreen({
   polishStatus = 'idle',
 }: Props) {
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <Text style={styles.h1} accessibilityRole="header">
-        Compose complaint
-      </Text>
+    <AppShell>
+      <AppHeader title="Compose complaint" overline="Draft" />
 
       {selectedTemplateId == null ? (
-        <View style={styles.section}>
-          <Text style={styles.label} accessibilityRole="header">
-            Pick a scenario
-          </Text>
+        <View>
+          <SectionLabel>Pick a scenario</SectionLabel>
           {templates.map((t) => (
-            <BigActionButton
+            <DestinationCard
               key={t.id}
-              label={t.title}
-              hint={`Use the ${t.title} template`}
+              title={t.title}
+              caption={`${t.mode.toUpperCase()} · regulator ${t.regulator.toUpperCase()}`}
               onPress={() => onSelectTemplate(t.id)}
             />
           ))}
@@ -50,9 +51,7 @@ export function ComplaintComposerScreen({
       ) : (
         <>
           <View style={styles.section}>
-            <Text style={styles.label} accessibilityRole="header">
-              Your draft
-            </Text>
+            <SectionLabel>Your draft</SectionLabel>
             <TextInput
               value={draftText}
               onChangeText={onChangeDraft}
@@ -62,9 +61,7 @@ export function ComplaintComposerScreen({
             />
           </View>
           <View style={styles.section}>
-            <Text style={styles.label} accessibilityRole="header">
-              What gets sent
-            </Text>
+            <SectionLabel>What gets sent</SectionLabel>
             <Text style={styles.preview} accessibilityRole="text">
               {draftText}
             </Text>
@@ -74,6 +71,7 @@ export function ComplaintComposerScreen({
               <BigActionButton
                 label={polishStatus === 'working' ? 'Polishing…' : 'Polish with AI'}
                 hint="Improve the draft's clarity without changing the facts or citations"
+                variant="secondary"
                 onPress={onPolish}
               />
               {polishStatus === 'apple-fm' && (
@@ -96,41 +94,42 @@ export function ComplaintComposerScreen({
             <BigActionButton
               label="Copy to clipboard"
               hint="Copy the draft so you can paste it elsewhere"
+              variant="secondary"
               onPress={onCopy}
             />
             <BigActionButton
               label="Export PDF"
               hint="Open a print-ready PDF of this draft"
+              variant="secondary"
               onPress={onExportPdf}
             />
           </View>
         </>
       )}
-    </ScrollView>
+    </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 48, gap: 16, backgroundColor: '#fff' },
-  h1: { fontSize: 28, fontWeight: '700', color: '#000' },
-  section: { gap: 8 },
-  label: { fontSize: 18, fontWeight: '600', color: '#000' },
+  section: { gap: space.sm },
   draftInput: {
-    borderWidth: 2,
-    borderColor: '#1f6feb',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    ...type.body,
+    borderWidth: 1,
+    borderColor: colors.line.hairline,
+    backgroundColor: colors.bg.raised,
+    borderRadius: radius.md,
+    paddingHorizontal: space.base,
+    paddingVertical: space.md,
     minHeight: 220,
-    color: '#000',
+    color: colors.ink.primary,
     textAlignVertical: 'top',
   },
   preview: {
-    fontSize: 14,
-    color: '#222',
-    backgroundColor: '#f6f8fa',
-    padding: 12,
-    borderRadius: 8,
+    ...type.caption,
+    color: colors.ink.muted,
+    backgroundColor: colors.bg.sunken,
+    padding: space.md,
+    borderRadius: radius.md,
   },
-  note: { fontSize: 14, color: '#444' },
+  note: { ...type.caption, color: colors.ink.muted },
 });
