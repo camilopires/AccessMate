@@ -70,4 +70,42 @@ export const migrations: readonly Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_complaints_incident ON complaints(incident_id);
     `,
   },
+  {
+    version: 4,
+    description: 'merge complaint fields into incidents; add draft status + events_json',
+    up: `
+      CREATE TABLE IF NOT EXISTS incidents_v4 (
+        id TEXT PRIMARY KEY,
+        trip_id TEXT REFERENCES trips(id) ON DELETE SET NULL,
+        status TEXT NOT NULL CHECK (status IN ('draft','in_progress','completed','discarded')),
+        summary TEXT,
+        operator_id TEXT,
+        location_lat REAL,
+        location_lng REAL,
+        location_label TEXT,
+        started_at TEXT NOT NULL,
+        completed_at TEXT,
+        title TEXT,
+        scenario_id TEXT,
+        narrative TEXT,
+        accompanied INTEGER,
+        staff_interactions TEXT,
+        witnesses TEXT,
+        waited_minutes INTEGER,
+        template_id TEXT,
+        draft_body TEXT,
+        recipient TEXT,
+        sent_at TEXT,
+        resolved_at TEXT,
+        reminder_id TEXT,
+        events_json TEXT NOT NULL DEFAULT '[]'
+      );
+      INSERT INTO incidents_v4 (id, trip_id, status, summary, operator_id, location_lat, location_lng, location_label, started_at, completed_at)
+        SELECT id, trip_id, status, summary, operator_id, location_lat, location_lng, location_label, started_at, completed_at FROM incidents;
+      DROP TABLE incidents;
+      ALTER TABLE incidents_v4 RENAME TO incidents;
+      CREATE INDEX IF NOT EXISTS idx_incidents_status ON incidents(status);
+      DROP TABLE IF EXISTS complaints;
+    `,
+  },
 ];
