@@ -4,12 +4,14 @@ import type { OperatorEntry, ScenarioTemplate } from '@accessmate/shared';
 // embeds the JSON at build time. Vite's `import.meta.glob` with `eager`
 // gives us a typed map keyed by filename.
 
+// Vite's import.meta.glob doesn't resolve TS aliases — use a relative
+// path. The actual files live in packages/shared/{operators,scenarios}.
 const operatorModules = import.meta.glob<{ default: OperatorEntry }>(
-  '@accessmate/shared/operators/*.json',
+  '../../../packages/shared/operators/*.json',
   { eager: true },
 );
 const scenarioModules = import.meta.glob<{ default: ScenarioTemplate }>(
-  '@accessmate/shared/scenarios/*.json',
+  '../../../packages/shared/scenarios/*.json',
   { eager: true },
 );
 

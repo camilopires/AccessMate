@@ -147,7 +147,8 @@ button.emergency {
   background: var(--emergency);
   color: white;
 }
-button.emergency .hint { color: rgba(255, 255, 255, 0.8); }
+/* full-white hint so contrast holds at small sizes against the red */
+button.emergency .hint { color: #ffffff; opacity: 0.96; }
 
 button:focus-visible {
   outline: 3px solid var(--accent-base);
@@ -169,6 +170,7 @@ button:focus-visible {
   padding: 10px 14px;
   border-radius: 999px;
   background: var(--raised);
+  color: var(--ink);
   border: 1px solid var(--hairline);
   min-height: var(--tap);
   font: inherit;

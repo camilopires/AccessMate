@@ -16,7 +16,6 @@ export function renderTabBar(
     return h(
       'button',
       {
-        role: 'tab',
         'aria-current': isCurrent ? 'page' : null,
         onclick: () => go(tab.route),
       },

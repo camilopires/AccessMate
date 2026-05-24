@@ -49,14 +49,13 @@ export function renderIncidents(target: HTMLElement, go: (hash: string) => void)
 
     const chips = h(
       'div',
-      { className: 'chips', role: 'tablist' },
+      { className: 'chips', role: 'group', 'aria-label': 'Filter incidents' },
       ...FILTERS.map((f) =>
         h(
           'button',
           {
             className: 'chip',
-            role: 'tab',
-            'aria-checked': filter === f.id ? 'true' : 'false',
+            'aria-pressed': filter === f.id ? 'true' : 'false',
             onclick: () => {
               filter = f.id;
               draw();
