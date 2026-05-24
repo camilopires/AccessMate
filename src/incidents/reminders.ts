@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 const EIGHT_WEEKS_MS = 8 * 7 * 24 * 60 * 60 * 1000;
 
 export interface ReminderInput {
-  complaintId: string;
+  incidentId: string;
   title: string;
   body: string;
   delayMs?: number;
@@ -18,7 +18,7 @@ export async function scheduleEightWeekReminder(input: ReminderInput): Promise<s
     if (req.status !== 'granted') return null;
   }
   return Notifications.scheduleNotificationAsync({
-    content: { title: input.title, body: input.body, data: { complaintId: input.complaintId } },
+    content: { title: input.title, body: input.body, data: { incidentId: input.incidentId } },
     trigger: {
       type: 'timeInterval' as never,
       seconds: Math.floor((input.delayMs ?? EIGHT_WEEKS_MS) / 1000),
