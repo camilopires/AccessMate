@@ -1,0 +1,71 @@
+{
+  "$schema-comment": "Parity fixtures for assembleDraft() — every platform must produce byte-identical output for each case.",
+  "cases": [
+    {
+      "name": "missed-passenger-assist-alone",
+      "template": {
+        "id": "missed-passenger-assist",
+        "title": "Missed Passenger Assist",
+        "mode": "rail",
+        "emailSubject": "Complaint: missed Passenger Assist on {{date}}",
+        "header": "I am writing to complain about a failure to provide Passenger Assist on a journey with {{operator}} on {{date}} at {{location}}.",
+        "legalParagraph": "Operators are required under the Accessible Travel Policy framework (overseen by the ORR) and the Equality Act 2010 to provide reliable, pre-booked assistance and to make reasonable adjustments. A failure to provide booked assistance is a service failure under your ATP and may constitute a breach of duty under the Equality Act 2010.",
+        "ask": "I would like a full investigation, a written explanation within 20 working days, the appropriate compensation under your Passenger Assist policy, and confirmation of the corrective action taken to prevent this from happening again.",
+        "regulator": "orr"
+      },
+      "facts": {
+        "whenISO": "2026-05-24T12:00:00Z",
+        "operatorName": "Avanti West Coast",
+        "scenarioId": "missed-passenger-assist",
+        "accompanied": false
+      },
+      "operator": {
+        "id": "avanti-west-coast",
+        "name": "Avanti West Coast",
+        "mode": "rail",
+        "assistance": { "phone": "+44-3457-225225" },
+        "complaintsRoute": { "primaryEmail": "customer.resolutions@avantiwestcoast.co.uk", "regulator": "orr" },
+        "lastVerifiedUTC": "2026-05-21T00:00:00Z"
+      },
+      "profile": null,
+      "expected": "# Missed Passenger Assist\n\nI am writing to complain about a failure to provide Passenger Assist on a journey with Avanti West Coast on 2026-05-24 at the location described above.\n\n## What happened\n\n- Date: 2026-05-24.\n- Operator: Avanti West Coast.\n- Travelling alone.\n\n## About me\n\nNo specific accessibility profile shared for this complaint.\n\n## Legal context\n\nOperators are required under the Accessible Travel Policy framework (overseen by the ORR) and the Equality Act 2010 to provide reliable, pre-booked assistance and to make reasonable adjustments. A failure to provide booked assistance is a service failure under your ATP and may constitute a breach of duty under the Equality Act 2010.\n\n## What I want\n\nI would like a full investigation, a written explanation within 20 working days, the appropriate compensation under your Passenger Assist policy, and confirmation of the corrective action taken to prevent this from happening again.\n"
+    },
+    {
+      "name": "step-free-blocked-with-companion-and-profile",
+      "template": {
+        "id": "inaccessible-facility",
+        "title": "Inaccessible Facility",
+        "mode": "rail",
+        "emailSubject": "Complaint: inaccessible facility on {{date}}",
+        "header": "I am writing about an inaccessible facility on a journey with {{operator}} on {{date}}.",
+        "legalParagraph": "Reasonable adjustments are required under the Equality Act 2010.",
+        "ask": "Please investigate and confirm the corrective action taken.",
+        "regulator": "orr"
+      },
+      "facts": {
+        "whenISO": "2026-05-20T08:00:00Z",
+        "operatorName": "Northern",
+        "scenarioId": "inaccessible-facility",
+        "accompanied": true,
+        "staffInteractions": "spoke to two members of platform staff",
+        "witnesses": "one other passenger",
+        "waitedMinutes": 45,
+        "narrative": "Step-free route was blocked by maintenance work"
+      },
+      "operator": {
+        "id": "northern",
+        "name": "Northern",
+        "mode": "rail",
+        "assistance": { "phone": "+44-800-138-5560" },
+        "complaintsRoute": { "primaryEmail": "customer.experience@northernrailway.co.uk", "regulator": "orr" },
+        "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+      },
+      "profile": {
+        "mobility": { "usesWheelchair": true, "wheelchairType": "powered" },
+        "sensory": { "isHardOfHearing": true },
+        "communication": { "needsExtraTime": true }
+      },
+      "expected": "# Inaccessible Facility\n\nI am writing about an inaccessible facility on a journey with Northern on 2026-05-20.\n\n## What happened\n\n- Date: 2026-05-20.\n- Operator: Northern.\n- Travelling with a companion.\n- Staff interactions: spoke to two members of platform staff.\n- Witnesses: one other passenger.\n- Waited approximately 45 minutes.\n- Summary: Step-free route was blocked by maintenance work.\n\n## About me\n\n- Powered wheelchair user.\n- Hard of hearing.\n- Needs extra time.\n\n## Legal context\n\nReasonable adjustments are required under the Equality Act 2010.\n\n## What I want\n\nPlease investigate and confirm the corrective action taken.\n"
+    }
+  ]
+}
