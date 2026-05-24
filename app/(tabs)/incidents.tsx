@@ -6,9 +6,7 @@ import { getIncidentStore } from '../../src/incidents/factory';
 export default function IncidentsTab() {
   const router = useRouter();
   const store = useMemo(() => getIncidentStore(), []);
-  const [incidents] = useState(() =>
-    store.listAll().filter((i) => i.status !== 'discarded')
-  );
+  const [incidents] = useState(() => store.listAll().filter((i) => i.status !== 'discarded'));
 
   return (
     <IncidentsListScreen

@@ -30,9 +30,7 @@ const incidents: Incident[] = [
 
 describe('IncidentsListScreen', () => {
   it('renders the new-report CTA prominently', () => {
-    render(
-      <IncidentsListScreen incidents={[]} onNewReport={() => {}} onOpenIncident={() => {}} />
-    );
+    render(<IncidentsListScreen incidents={[]} onNewReport={() => {}} onOpenIncident={() => {}} />);
     expect(screen.getByRole('button', { name: /start a new report/i })).toBeTruthy();
   });
 
@@ -42,7 +40,7 @@ describe('IncidentsListScreen', () => {
         incidents={incidents}
         onNewReport={() => {}}
         onOpenIncident={() => {}}
-      />
+      />,
     );
     expect(screen.getByRole('switch', { name: /drafts \(1\)/i })).toBeTruthy();
     expect(screen.getByRole('switch', { name: /in progress \(1\)/i })).toBeTruthy();
@@ -55,7 +53,7 @@ describe('IncidentsListScreen', () => {
         incidents={incidents}
         onNewReport={() => {}}
         onOpenIncident={() => {}}
-      />
+      />,
     );
     expect(screen.queryByText('Manchester delay')).toBeTruthy();
     expect(screen.queryByText('Euston ramp')).toBeNull();
@@ -67,7 +65,7 @@ describe('IncidentsListScreen', () => {
         incidents={incidents}
         onNewReport={() => {}}
         onOpenIncident={() => {}}
-      />
+      />,
     );
     fireEvent.press(screen.getByRole('switch', { name: /drafts/i }));
     expect(screen.getByText('Euston ramp')).toBeTruthy();
@@ -81,7 +79,7 @@ describe('IncidentsListScreen', () => {
         incidents={incidents}
         onNewReport={() => {}}
         onOpenIncident={onOpenIncident}
-      />
+      />,
     );
     fireEvent.press(screen.getByText('Manchester delay'));
     expect(onOpenIncident).toHaveBeenCalledWith('i2');
@@ -90,20 +88,14 @@ describe('IncidentsListScreen', () => {
   it('tapping Start a new report calls onNewReport', () => {
     const onNewReport = jest.fn();
     render(
-      <IncidentsListScreen
-        incidents={[]}
-        onNewReport={onNewReport}
-        onOpenIncident={() => {}}
-      />
+      <IncidentsListScreen incidents={[]} onNewReport={onNewReport} onOpenIncident={() => {}} />,
     );
     fireEvent.press(screen.getByRole('button', { name: /start a new report/i }));
     expect(onNewReport).toHaveBeenCalledTimes(1);
   });
 
   it('shows an empty-state message when the active filter is empty', () => {
-    render(
-      <IncidentsListScreen incidents={[]} onNewReport={() => {}} onOpenIncident={() => {}} />
-    );
+    render(<IncidentsListScreen incidents={[]} onNewReport={() => {}} onOpenIncident={() => {}} />);
     expect(screen.getByText(/no incidents in progress/i)).toBeTruthy();
   });
 });
