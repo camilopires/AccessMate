@@ -1,12 +1,21 @@
 {
   "name": "accessmate",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "description": "AccessMate — three native apps (web, iOS, Android) for accessibility-first UK rail journeys.",
+  "workspaces": [
+    "apps/web",
+    "packages/*"
+  ],
   "scripts": {
-    "web": "pnpm --filter @accessmate/web dev",
-    "web:build": "pnpm --filter @accessmate/web build",
-    "web:typecheck": "pnpm --filter @accessmate/web typecheck"
+    "web": "bun --filter @accessmate/web dev",
+    "web:build": "bun --filter @accessmate/web build",
+    "web:typecheck": "bun --filter @accessmate/web typecheck",
+    "web:test": "bun --filter @accessmate/web test",
+    "web:e2e": "bun --filter @accessmate/web e2e",
+    "test": "bun run web:test"
   },
-  "packageManager": "pnpm@9.0.0"
+  "trustedDependencies": [
+    "esbuild"
+  ]
 }

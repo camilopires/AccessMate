@@ -1,7 +1,0 @@
-packages:
-  - 'apps/web'
-  - 'packages/*'
-
-allowBuilds:
-  esbuild: true
-  unrs-resolver: true

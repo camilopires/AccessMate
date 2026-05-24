@@ -4,7 +4,7 @@
 
 AccessMate helps disabled passengers carry their access needs from one journey to the next, capture what went wrong when something fails, and turn that capture into a complaint that the operator (and, if needed, the regulator) will actually act on. Everything lives on the device — no account, no cloud, no analytics.
 
-**Current release: v0.4.0 — monorepo cut.** React Native has been removed. The app is now three independent native codebases sharing only the bundled operator + scenario data and a small set of TypeScript types.
+**Current release: v0.5.0 — feature parity restored.** Bun-managed monorepo, conversational AI on iOS, Liquid Glass everywhere on iOS 26+, PDF export + push reminders on iOS / Android, parity tests pinning `assembleDraft` byte-identical across the three platforms.
 
 ---
 
@@ -46,9 +46,11 @@ Pick when, which operator (from 20 UK rail operators), which scenario, alone or 
 ### Web — `apps/web`
 
 ```bash
-pnpm install
-pnpm web                  # vite dev server on :5173
-pnpm web:build            # static export
+bun install
+bun run web               # vite dev server on :5173
+bun run web:build         # static export
+bun run web:test          # bun:test unit suite
+bun run web:e2e           # Playwright + axe smoke
 ```
 
 Native HTML controls (`<button>`, `<input type="checkbox">`, `<select>`, etc.), `localStorage` persistence, no framework, ~10 KB of TypeScript.
