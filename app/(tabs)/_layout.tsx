@@ -6,7 +6,9 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.accent.base,
+        // accent.base on paper is 4.28:1 at 12px — fails WCAG AA for small text.
+        // accent.deep (#7A3A0F) on paper is ~9:1 and reads better as a tab tint.
+        tabBarActiveTintColor: colors.accent.deep,
         tabBarInactiveTintColor: colors.ink.muted,
         tabBarStyle: {
           backgroundColor: colors.bg.paper,

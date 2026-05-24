@@ -15,6 +15,10 @@ export function ProfileChip({ label, selected, onToggle, testID }: Props) {
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityState={{ checked: selected }}
+      // RN-Web doesn't always translate accessibilityState.checked to
+      // aria-checked when the host element is a Pressable (not a real
+      // <Switch>). Set the ARIA attribute explicitly so axe is happy.
+      aria-checked={selected}
       style={({ pressed }) => [
         styles.chip,
         selected && styles.chipOn,
