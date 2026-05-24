@@ -61,6 +61,28 @@ test('onboarding redirect on first run, Set up later returns to Incidents tab', 
   await expect(page.getByRole('heading', { name: 'Incidents' })).toBeVisible();
 });
 
+test('report flow (template): walks 4 steps → lands on incident detail', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /start a new report/i }).click();
+  await expect(page.getByRole('heading', { name: 'New report' })).toBeVisible();
+  // Step 1: When? — Next
+  await page.getByRole('button', { name: /^next$/i }).click();
+  // Step 2: Operator — Avanti West Coast → Next
+  await page.getByText('Avanti West Coast').click();
+  await page.getByRole('button', { name: /^next$/i }).click();
+  // Step 3: Scenario — Missed Passenger Assist → Next
+  await page.getByText('Missed Passenger Assist').click();
+  await page.getByRole('button', { name: /^next$/i }).click();
+  // Step 4: Accompanied? — Alone → Draft
+  await page.getByRole('switch', { name: 'Alone' }).click();
+  await page.getByRole('button', { name: /draft complaint/i }).click();
+  // Lands on incident detail
+  await expect(
+    page.getByRole('heading', { name: /missed passenger assist/i })
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: /^send$/i })).toBeVisible();
+});
+
 test('passport edit flow: empty → edit → toggle → save → fact visible', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('tab', { name: /passport/i }).click();
