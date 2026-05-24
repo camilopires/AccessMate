@@ -6,20 +6,12 @@ import { BigActionButton } from '../components/BigActionButton';
 import { DestinationCard } from '../components/DestinationCard';
 import { ProfileChip } from '../components/ProfileChip';
 import { SectionLabel } from '../components/SectionLabel';
-import { assembleDraft } from '../incidents/assemble';
+import { buildDraftFromFacts, type DraftFromFactsOutput } from '../incidents/draft-from-facts';
 import type { ComplaintTemplate } from '../incidents/template-schemas';
 import type { OperatorEntry } from '../content/schemas';
-import type { IncidentFacts } from '../incidents/schemas';
 import { colors, space, type } from '../theme';
 
-export interface ReportDraft {
-  title: string;
-  facts: IncidentFacts;
-  templateId: string;
-  draftBody: string;
-  recipient?: string;
-  operatorId?: string;
-}
+export type ReportDraft = DraftFromFactsOutput;
 
 interface Props {
   operators: OperatorEntry[];
@@ -28,6 +20,10 @@ interface Props {
   onCancel: () => void;
   /** Drop the paper background so a parent glass surface shows through. */
   transparent?: boolean;
+  /** Pre-select fields when the conversational flow hands off mid-conversation. */
+  initialOperatorName?: string;
+  initialScenarioId?: string;
+  initialAccompanied?: boolean;
 }
 
 type Step = 1 | 2 | 3 | 4;
@@ -45,13 +41,20 @@ export function ReportForm({
   onComplete,
   onCancel,
   transparent = false,
+  initialOperatorName,
+  initialScenarioId,
+  initialAccompanied,
 }: Props) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const [step, setStep] = useState<Step>(1);
   const [whenISO, setWhenISO] = useState<string>(today);
-  const [operatorId, setOperatorId] = useState<string | null>(null);
-  const [scenarioId, setScenarioId] = useState<string | null>(null);
-  const [accompanied, setAccompanied] = useState<boolean | null>(null);
+  const [operatorId, setOperatorId] = useState<string | null>(
+    initialOperatorName
+      ? (operators.find((o) => o.name === initialOperatorName)?.id ?? null)
+      : null,
+  );
+  const [scenarioId, setScenarioId] = useState<string | null>(initialScenarioId ?? null);
+  const [accompanied, setAccompanied] = useState<boolean | null>(initialAccompanied ?? null);
 
   const operator = operators.find((o) => o.id === operatorId);
   const template = templates.find((t) => t.id === scenarioId);
@@ -63,33 +66,14 @@ export function ReportForm({
 
   const complete = () => {
     if (!template) return;
-    const facts: IncidentFacts = {
-      whenISO: `${whenISO}T12:00:00Z`,
-      mode: template.mode,
-      operatorName: operator?.name,
-      scenarioId: template.id,
-      accompanied: accompanied ?? undefined,
-    };
-    const draftBody = assembleDraft({
-      incident: {
-        id: 'preview',
-        status: 'draft',
-        startedAtISO: `${whenISO}T12:00:00Z`,
-        operatorId: operator?.id,
-        events: [],
-      },
-      profile: { emergencyContacts: [] },
-      template,
-      operatorName: operator?.name,
-    });
-    onComplete({
-      title: `${template.title}${operator ? ` — ${operator.name}` : ''}`,
-      facts,
-      templateId: template.id,
-      draftBody,
-      recipient: operator?.complaintsRoute.primaryEmail,
-      operatorId: operator?.id,
-    });
+    onComplete(
+      buildDraftFromFacts({
+        whenISO,
+        operator,
+        template,
+        accompanied: accompanied ?? undefined,
+      }),
+    );
   };
 
   return (

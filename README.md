@@ -13,6 +13,7 @@ Current release: **v0.2.0** — three-pillar scope cut + Liquid Glass scaffold o
 The app is deliberately small. One tab per pillar, in this order:
 
 ### 1. Incidents — the default tab
+
 A single list of every report you've ever started, with three filter chips:
 
 - **Drafts** — captured but not sent
@@ -24,9 +25,11 @@ At the top of the list sits a **Start a new report** call-to-action. Each row sh
 Tap any incident to see its **timeline** — capture → sent → operator response → escalation → resolved — and the actions available at that step (Edit / Send / Discard for drafts; Operator replied / Escalate to regulator / Mark resolved for in-progress; Export PDF / Re-open for completed).
 
 ### 2. Passport — your accessibility profile
+
 A one-screen summary of the access needs you want staff to know about: mobility aid, sight, hearing, cognitive, hidden disabilities, preferred boarding side, whether you travel with an assistance dog or a companion. The Passport is the source of truth that the Report flow auto-fills from, and it can be shown to staff as a single card.
 
 ### 3. Settings
+
 Accessibility preferences (high contrast, reduce motion, font scale), AI provider (`off` / `on-device` / `on-device + cloud`), and data controls (export everything as JSON, wipe device data).
 
 ---
@@ -37,7 +40,7 @@ When you tap **Start a new report**, a modal sheet walks you through four steps:
 
 1. **When did this happen?** — date defaults to today
 2. **Which operator?** — pick from the bundled UK rail operator list
-3. **What happened?** — pick a scenario (e.g. *Missed Passenger Assist*, *Step-free route blocked*, *Assistance booked but no-show*)
+3. **What happened?** — pick a scenario (e.g. _Missed Passenger Assist_, _Step-free route blocked_, _Assistance booked but no-show_)
 4. **Were you alone?** — alone / with a companion
 
 The flow then assembles a draft complaint addressed to the right recipient at that operator, pre-populated with your Passport details, the scenario template, and the facts you entered. You can edit the draft, send it, or save it for later. The whole interaction is designed to take under 90 seconds even on a moving train.
@@ -61,19 +64,19 @@ All colors used at body or caption size meet WCAG 2.2 AA, verified in CI by axe-
 
 ## Tech stack
 
-| Layer | Choice |
-|---|---|
-| Runtime | **Expo SDK 54** (React Native 0.81, React 19, new architecture on) |
-| Routing | **expo-router 6** with typed routes and route groups |
-| State | Local — no Redux, no remote state |
-| Persistence | **SQLite** on native (`expo-sqlite`), `localStorage` on web — selected via a platform-aware store factory |
-| Schemas | **Zod 4** discriminated unions for `IncidentEvent`, `IncidentFacts`, etc. |
-| iOS AI | **Apple FoundationModels** (`SystemLanguageModel` / `LanguageModelSession`, iOS 26.0+) via local Expo module `modules/apple-fm/` |
-| iOS chrome | **UIGlassMaterialView** (iOS 26.0+) wrapped by local Expo module `modules/glass-surface/` |
-| Notifications | `expo-notifications` for follow-up reminders on stalled incidents |
-| Export / share | `expo-print` (PDF), `expo-sharing`, `expo-clipboard` |
-| Web target | `react-native-web` 0.21, static export |
-| Tests | **vitest** (unit), **jest + @testing-library/react-native** (component), **Playwright + @axe-core/playwright** (e2e + a11y) |
+| Layer          | Choice                                                                                                                           |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Runtime        | **Expo SDK 54** (React Native 0.81, React 19, new architecture on)                                                               |
+| Routing        | **expo-router 6** with typed routes and route groups                                                                             |
+| State          | Local — no Redux, no remote state                                                                                                |
+| Persistence    | **SQLite** on native (`expo-sqlite`), `localStorage` on web — selected via a platform-aware store factory                        |
+| Schemas        | **Zod 4** discriminated unions for `IncidentEvent`, `IncidentFacts`, etc.                                                        |
+| iOS AI         | **Apple FoundationModels** (`SystemLanguageModel` / `LanguageModelSession`, iOS 26.0+) via local Expo module `modules/apple-fm/` |
+| iOS chrome     | **UIGlassMaterialView** (iOS 26.0+) wrapped by local Expo module `modules/glass-surface/`                                        |
+| Notifications  | `expo-notifications` for follow-up reminders on stalled incidents                                                                |
+| Export / share | `expo-print` (PDF), `expo-sharing`, `expo-clipboard`                                                                             |
+| Web target     | `react-native-web` 0.21, static export                                                                                           |
+| Tests          | **vitest** (unit), **jest + @testing-library/react-native** (component), **Playwright + @axe-core/playwright** (e2e + a11y)      |
 
 ---
 
