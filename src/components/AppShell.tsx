@@ -17,9 +17,10 @@ interface Props {
 
 export function AppShell({ children, scroll = true, pad = space.lg, back = true }: Props) {
   const router = useRouter();
+  const canGoBack = back && (router.canGoBack?.() ?? false);
   const inner = (
     <View style={[styles.inner, { paddingHorizontal: pad, paddingBottom: space['3xl'] }]}>
-      {back && (
+      {canGoBack && (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Back"

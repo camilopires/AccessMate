@@ -39,7 +39,11 @@ export default function RootLayout() {
             title: 'AccessMate',
             contentStyle: { backgroundColor: colors.bg.paper },
           }}
-        />
+        >
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="profile/edit" />
+          <Stack.Screen name="onboarding" />
+        </Stack>
       ) : (
         <View style={{ flex: 1, backgroundColor: colors.bg.paper }} />
       )}

@@ -70,7 +70,7 @@ export default function OnboardingScreen() {
       // Invalid profile shape (e.g. partial contact) — skip the profile write.
     }
     settings.update({ onboardingComplete: true });
-    router.replace('/');
+    router.replace('/(tabs)/incidents');
   };
 
   const next = () => {
@@ -227,7 +227,7 @@ export default function OnboardingScreen() {
           variant="ghost"
           onPress={() => {
             settings.update({ onboardingComplete: true });
-            router.replace('/');
+            router.replace('/(tabs)/incidents');
           }}
         />
       </View>

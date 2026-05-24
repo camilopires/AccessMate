@@ -15,7 +15,7 @@ export default function ProfileEditScreen() {
   const onSave = () => {
     try {
       store.upsert(profile);
-      router.replace('/profile');
+      router.replace('/(tabs)/passport');
     } catch (e) {
       Alert.alert('Could not save', e instanceof Error ? e.message : 'Unknown error');
     }

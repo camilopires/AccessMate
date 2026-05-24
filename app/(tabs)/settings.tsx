@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AppShell } from '../src/components/AppShell';
-import { AppHeader } from '../src/components/AppHeader';
-import { BigActionButton } from '../src/components/BigActionButton';
-import { ProfileChip } from '../src/components/ProfileChip';
-import { SectionLabel } from '../src/components/SectionLabel';
-import { getSettingsStore } from '../src/settings/factory';
-import type { Settings, AiProvider } from '../src/settings/store';
-import { exportAllData, wipeAllData } from '../src/settings/data-ops';
-import { colors, space, type } from '../src/theme';
+import { AppShell } from '../../src/components/AppShell';
+import { AppHeader } from '../../src/components/AppHeader';
+import { BigActionButton } from '../../src/components/BigActionButton';
+import { ProfileChip } from '../../src/components/ProfileChip';
+import { SectionLabel } from '../../src/components/SectionLabel';
+import { getSettingsStore } from '../../src/settings/factory';
+import type { Settings, AiProvider } from '../../src/settings/store';
+import { exportAllData, wipeAllData } from '../../src/settings/data-ops';
+import { colors, space, type } from '../../src/theme';
 
 const AI_PROVIDERS: { id: AiProvider; label: string }[] = [
   { id: 'off', label: 'AI off' },
@@ -39,7 +39,7 @@ export default function SettingsScreen() {
           onPress: () => {
             try {
               wipeAllData();
-              router.replace('/');
+              router.replace('/(tabs)/incidents');
             } catch (e) {
               Alert.alert('Wipe failed', e instanceof Error ? e.message : 'Unknown error');
             }

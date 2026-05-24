@@ -103,7 +103,7 @@ function rowToMedia(r: MediaRow): MediaRef {
 export class SqliteIncidentStore implements IncidentStore {
   constructor(
     private readonly db: SqliteAdapter,
-    private readonly clock: Clock = defaultClock
+    private readonly clock: Clock = defaultClock,
   ) {}
 
   start(input: IncidentStartInput): Incident {
@@ -121,7 +121,7 @@ export class SqliteIncidentStore implements IncidentStore {
         input.location?.lat ?? null,
         input.location?.lng ?? null,
         input.location?.label ?? null,
-      ]
+      ],
     );
     return this.get(id)!;
   }
@@ -152,7 +152,7 @@ export class SqliteIncidentStore implements IncidentStore {
         input.templateId ?? null,
         input.draftBody ?? null,
         input.recipient ?? null,
-      ]
+      ],
     );
     return this.get(id)!;
   }
@@ -184,7 +184,7 @@ export class SqliteIncidentStore implements IncidentStore {
     if (!this.get(id)) throw new Error(`Incident not found: ${id}`);
     this.db.runSync(
       `UPDATE incidents SET status = 'completed', completed_at = ?, resolved_at = ?, summary = COALESCE(?, summary) WHERE id = ?`,
-      [this.clock.now(), this.clock.now(), summary ?? null, id]
+      [this.clock.now(), this.clock.now(), summary ?? null, id],
     );
   }
 
@@ -203,7 +203,7 @@ export class SqliteIncidentStore implements IncidentStore {
     const events: IncidentEvent[] = [...cur.events, { kind: 'marked_resolved', atISO: now }];
     this.db.runSync(
       `UPDATE incidents SET status = 'completed', completed_at = ?, resolved_at = ?, events_json = ? WHERE id = ?`,
-      [now, now, JSON.stringify(events), id]
+      [now, now, JSON.stringify(events), id],
     );
   }
 
@@ -241,7 +241,7 @@ export class SqliteIncidentStore implements IncidentStore {
         validated.fileUri ?? null,
         validated.textBody ?? null,
         validated.capturedAtISO,
-      ]
+      ],
     );
     return validated;
   }

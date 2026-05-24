@@ -141,8 +141,6 @@ describe('IncidentEvent schema', () => {
   });
 
   it('rejects an unknown event kind', () => {
-    expect(() =>
-      IncidentEvent.parse({ kind: 'magic', atISO: '2026-06-23T10:00:00Z' }),
-    ).toThrow();
+    expect(() => IncidentEvent.parse({ kind: 'magic', atISO: '2026-06-23T10:00:00Z' })).toThrow();
   });
 });

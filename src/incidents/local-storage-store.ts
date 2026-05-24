@@ -1,11 +1,5 @@
 import { Incident, MediaRef } from './schemas';
-import type {
-  Clock,
-  DraftInput,
-  IncidentStartInput,
-  IncidentStore,
-  MediaInput,
-} from './store';
+import type { Clock, DraftInput, IncidentStartInput, IncidentStore, MediaInput } from './store';
 import type { IncidentEvent } from './schemas';
 import { defaultClock } from './store';
 
@@ -15,7 +9,7 @@ const KEY_MEDIA = 'accessmate.media.v1';
 export class LocalStorageIncidentStore implements IncidentStore {
   constructor(
     private readonly storage: Storage,
-    private readonly clock: Clock = defaultClock
+    private readonly clock: Clock = defaultClock,
   ) {}
 
   private readArr<T>(key: string, schema: { parse: (x: unknown) => T }): T[] {
