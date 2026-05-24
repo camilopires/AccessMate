@@ -1,0 +1,15 @@
+{
+  "id": "great-western-railway",
+  "name": "Great Western Railway",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-800-197-1329",
+    "bookingUrl": "https://www.gwr.com/plan-journey/journey-information/accessibility/passenger-assist",
+    "accessibilityPageUrl": "https://www.gwr.com/plan-journey/journey-information/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "gwr.feedback@gwr.com",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "east-midlands-railway",
+  "name": "East Midlands Railway",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-3457-125-678",
+    "bookingUrl": "https://www.eastmidlandsrailway.co.uk/travel-information/accessibility/passenger-assist",
+    "accessibilityPageUrl": "https://www.eastmidlandsrailway.co.uk/travel-information/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "getintouch@eastmidlandsrailway.co.uk",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}

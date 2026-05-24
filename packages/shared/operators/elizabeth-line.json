@@ -1,0 +1,15 @@
+{
+  "id": "elizabeth-line",
+  "name": "Elizabeth line",
+  "mode": "tfl",
+  "assistance": {
+    "phone": "+44-343-222-1234",
+    "bookingUrl": "https://tfl.gov.uk/transport-accessibility/booking-assistance-on-public-transport",
+    "accessibilityPageUrl": "https://tfl.gov.uk/modes/elizabeth-line/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryUrl": "https://tfl.gov.uk/help-and-contact/contact-us-about-the-elizabeth-line",
+    "regulator": "local"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}

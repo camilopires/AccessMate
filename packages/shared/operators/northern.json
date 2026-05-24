@@ -1,0 +1,15 @@
+{
+  "id": "northern",
+  "name": "Northern",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-800-138-5560",
+    "bookingUrl": "https://www.northernrailway.co.uk/travel/accessibility/passenger-assist",
+    "accessibilityPageUrl": "https://www.northernrailway.co.uk/travel/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "customer.experience@northernrailway.co.uk",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}

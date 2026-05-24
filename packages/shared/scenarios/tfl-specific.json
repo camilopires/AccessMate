@@ -1,0 +1,10 @@
+{
+  "id": "tfl-specific",
+  "title": "TfL-specific complaint",
+  "mode": "tfl",
+  "emailSubject": "Complaint to TfL on {{date}}",
+  "header": "I am writing to complain about my experience on a TfL service on {{date}} at {{location}}.",
+  "legalParagraph": "Transport for London is bound by the Equality Act 2010 and has additional commitments under its own Accessibility Policy and the Mayor of London's Transport Strategy. TfL also publishes complaints data and is overseen by the London Assembly Transport Committee and, where relevant, by the EHRC for matters that engage the Equality Act.",
+  "ask": "I would like a full investigation, a written response within 20 working days, an explanation of the corrective action taken, and confirmation of whether this incident will be reflected in TfL's published accessibility-complaints reporting.",
+  "regulator": "local"
+}

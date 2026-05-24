@@ -1,0 +1,15 @@
+{
+  "id": "chiltern-railways",
+  "name": "Chiltern Railways",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-345-600-5165",
+    "bookingUrl": "https://www.chilternrailways.co.uk/passenger-assistance",
+    "accessibilityPageUrl": "https://www.chilternrailways.co.uk/about-us/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "customerservices@chilternrailways.co.uk",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}

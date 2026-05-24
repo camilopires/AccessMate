@@ -1,0 +1,15 @@
+{
+  "id": "southern",
+  "name": "Southern",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-800-138-1016",
+    "bookingUrl": "https://www.southernrailway.com/travel-information/accessibility/passenger-assist",
+    "accessibilityPageUrl": "https://www.southernrailway.com/travel-information/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "comments@southernrailway.com",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}

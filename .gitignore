@@ -1,70 +1,36 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
-node_modules/
-
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
-
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
+# OS / editor
 .DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
-app-example
-
-# generated native folders
-/ios
-/android
-
-# --- AccessMate additions ---
-
-# env (all variants, allow example)
-.env
-.env.*
-!.env.example
-
-# editors
 .idea/
-.vscode/*
-!.vscode/settings.json.example
+.vscode/
 *.swp
 
-# test output
-coverage/
-playwright-report/
-test-results/
-.maestro/
+# Node / pnpm
+node_modules/
+.pnpm-store/
+*.log
+pnpm-debug.log*
+*.tsbuildinfo
 
-# build/cache
-.babel-cache/
-.metro/
-.tamagui/
+# Web (Vite)
+apps/web/dist/
 
-# cloudflare worker (Phase 9)
-.wrangler/
+# iOS
+apps/ios/AccessMate.xcodeproj/
+apps/ios/build/
+apps/ios/DerivedData/
+apps/ios/*.xcworkspace/xcuserdata/
+
+# Android
+apps/android/.gradle/
+apps/android/build/
+apps/android/app/build/
+apps/android/local.properties
+apps/android/captures/
+apps/android/.idea/
+
+# Misc
+.env*
+!.env.example
+
+# Stale Expo prebuild artefacts
+.expo/

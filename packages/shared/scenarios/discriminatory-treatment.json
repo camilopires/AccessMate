@@ -1,0 +1,10 @@
+{
+  "id": "discriminatory-treatment",
+  "title": "Discriminatory treatment",
+  "mode": "rail",
+  "emailSubject": "Complaint: discriminatory treatment on {{date}}",
+  "header": "I am writing to complain about how I was treated by staff of {{operator}} on {{date}} at {{location}}. The treatment I received was, in my view, discriminatory on the grounds of disability.",
+  "legalParagraph": "The Equality Act 2010 prohibits direct and indirect discrimination, harassment, and victimisation on the grounds of disability in the provision of services. Operators and their staff are bound by this duty when interacting with passengers. The Equality and Human Rights Commission (EHRC) oversees compliance with the Act.",
+  "ask": "I would like a full investigation, a written explanation within 20 working days, a meaningful apology, and confirmation of any disciplinary or training action taken with the staff involved. If you do not respond satisfactorily I will consider escalating this to the EHRC and, where appropriate, taking legal advice.",
+  "regulator": "ehrc"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "missed-passenger-assist",
+  "title": "Missed Passenger Assist",
+  "mode": "rail",
+  "emailSubject": "Complaint: missed Passenger Assist on {{date}}",
+  "header": "I am writing to complain about a failure to provide Passenger Assist on a journey with {{operator}} on {{date}} at {{location}}.",
+  "legalParagraph": "Operators are required under the Accessible Travel Policy framework (overseen by the ORR) and the Equality Act 2010 to provide reliable, pre-booked assistance and to make reasonable adjustments. A failure to provide booked assistance is a service failure under your ATP and may constitute a breach of duty under the Equality Act 2010.",
+  "ask": "I would like a full investigation, a written explanation within 20 working days, the appropriate compensation under your Passenger Assist policy, and confirmation of the corrective action taken to prevent this from happening again.",
+  "regulator": "orr"
+}

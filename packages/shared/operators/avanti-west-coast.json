@@ -1,0 +1,15 @@
+{
+  "id": "avanti-west-coast",
+  "name": "Avanti West Coast",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-3457-225225",
+    "bookingUrl": "https://www.avantiwestcoast.co.uk/travelling-with-us/accessibility",
+    "accessibilityPageUrl": "https://www.avantiwestcoast.co.uk/travelling-with-us/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "customer.resolutions@avantiwestcoast.co.uk",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-21T00:00:00Z"
+}

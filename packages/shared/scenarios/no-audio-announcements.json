@@ -1,0 +1,10 @@
+{
+  "id": "no-audio-announcements",
+  "title": "No audio announcements",
+  "mode": "rail",
+  "emailSubject": "Complaint: missing audio announcements on {{date}}",
+  "header": "I am writing to complain that audio announcements were not made on a journey with {{operator}} on {{date}}. As a passenger who relies on audio information to navigate the service, this had a significant impact on my journey.",
+  "legalParagraph": "Operators are required, under the Equality Act 2010, to make reasonable adjustments so that disabled passengers can access information on equal terms. For rail, your Accessible Travel Policy (overseen by the ORR) commits to providing accessible journey information, which includes audio announcements where they are routinely made for non-disabled passengers.",
+  "ask": "I would like a full investigation, a written explanation within 20 working days of why announcements were not made, and confirmation of the corrective action taken to ensure announcements are consistently made on this route going forward.",
+  "regulator": "orr"
+}

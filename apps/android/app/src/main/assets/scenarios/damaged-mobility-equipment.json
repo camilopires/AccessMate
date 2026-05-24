@@ -1,0 +1,10 @@
+{
+  "id": "damaged-mobility-equipment",
+  "title": "Damaged mobility equipment",
+  "mode": "rail",
+  "emailSubject": "Complaint: damaged mobility equipment on {{date}}",
+  "header": "I am writing to complain that my mobility equipment was damaged while in the care of {{operator}} on {{date}}.",
+  "legalParagraph": "Operators carrying mobility equipment owe a duty of care for that equipment and are required, under the Equality Act 2010, to make reasonable adjustments and to compensate the user where assistive equipment is damaged in their care. For rail journeys, your obligations under your Accessible Travel Policy apply; for air journeys, EU Regulation 1107/2006 (as retained in UK law) applies and the Civil Aviation Authority oversees compliance.",
+  "ask": "I would like a full investigation, compensation for repair or replacement of my damaged equipment, a loaner of equivalent specification while repairs are in progress, and a written response within 20 working days.",
+  "regulator": "orr"
+}

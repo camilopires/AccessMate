@@ -1,0 +1,15 @@
+{
+  "id": "c2c",
+  "name": "c2c",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-1702-357640",
+    "bookingUrl": "https://www.c2c-online.co.uk/help-and-support/accessibility/passenger-assist/",
+    "accessibilityPageUrl": "https://www.c2c-online.co.uk/help-and-support/accessibility/"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "contact@c2crail.net",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}

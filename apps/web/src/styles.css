@@ -1,0 +1,370 @@
+/* AccessMate web — native HTML controls, warm civic palette. */
+
+:root {
+  --paper: #faf7f2;
+  --raised: #fdfbf7;
+  --sunken: #f1ede5;
+  --ink: #1b1a17;
+  --ink-muted: #6f6a60;
+  --ink-soft: #9a9485;
+  --accent-base: #b85c1f;
+  --accent-deep: #7a3a0f;
+  --hairline: #e6dfd1;
+  --emergency: #b53728;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --tap: 56px;
+  font-family:
+    'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.5;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100%;
+}
+
+body {
+  font-family:
+    'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 72px);
+}
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+h1, h2 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+h1 { font-size: 32px; line-height: 1.15; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 18px; margin: 0; font-weight: 600; }
+
+.overline {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 4px;
+}
+
+p { margin: 0; color: var(--ink); }
+
+a { color: var(--accent-deep); }
+
+/* Cards / sections */
+
+section.card {
+  background: var(--raised);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--hairline);
+}
+
+section.card.emergency {
+  background: var(--emergency);
+  color: white;
+  border-color: transparent;
+}
+
+section.card.emergency h2 { color: white; }
+
+.section-label {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* Native controls */
+
+button,
+.button {
+  font: inherit;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  min-height: var(--tap);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: stretch;
+  width: 100%;
+}
+
+button .hint,
+.button .hint {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+button.secondary {
+  background: var(--raised);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+}
+button.secondary .hint { color: var(--ink-muted); }
+
+button.ghost {
+  background: transparent;
+  color: var(--accent-deep);
+  border: 1px solid transparent;
+}
+button.ghost .hint { color: var(--ink-muted); }
+
+button.emergency {
+  background: var(--emergency);
+  color: white;
+}
+button.emergency .hint { color: rgba(255, 255, 255, 0.8); }
+
+button:focus-visible {
+  outline: 3px solid var(--accent-base);
+  outline-offset: 2px;
+}
+
+/* Inline switch / chip group */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: var(--raised);
+  border: 1px solid var(--hairline);
+  min-height: var(--tap);
+  font: inherit;
+  cursor: pointer;
+}
+
+.chip[aria-pressed='true'],
+.chip[aria-checked='true'] {
+  background: var(--accent-deep);
+  color: white;
+  border-color: var(--accent-deep);
+}
+
+/* Form fields */
+
+label.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+label.field input,
+label.field select,
+label.field textarea {
+  font: inherit;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 17px;
+  color: var(--ink);
+  background: var(--raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  min-height: var(--tap);
+}
+
+label.field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+label.field input:focus,
+label.field select:focus,
+label.field textarea:focus {
+  outline: 3px solid var(--accent-base);
+  outline-offset: 2px;
+}
+
+/* Switch (native checkbox restyled as iOS-ish toggle) */
+
+label.switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  min-height: var(--tap);
+  font-size: 17px;
+}
+
+label.switch .track {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  background: var(--hairline);
+  border-radius: 999px;
+  flex-shrink: 0;
+  transition: background 120ms ease;
+}
+
+label.switch .track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 999px;
+  transition: transform 120ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+label.switch input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+label.switch input[type='checkbox']:checked + .track {
+  background: var(--accent-deep);
+}
+
+label.switch input[type='checkbox']:checked + .track::after {
+  transform: translateX(20px);
+}
+
+label.switch input[type='checkbox']:focus-visible + .track {
+  outline: 3px solid var(--accent-base);
+  outline-offset: 2px;
+}
+
+/* List */
+
+ul.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+ul.list li > button {
+  position: relative;
+}
+
+/* Status badge */
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--sunken);
+  color: var(--ink);
+}
+.badge.draft { background: var(--sunken); color: var(--ink-muted); }
+.badge.in_progress { background: var(--accent-deep); color: white; }
+.badge.completed { background: #2e6b3a; color: white; }
+
+/* Tab bar */
+
+nav#tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--paper);
+  border-top: 1px solid var(--hairline);
+  padding: 4px 8px calc(env(safe-area-inset-bottom, 0) + 4px);
+  justify-content: space-around;
+  z-index: 100;
+}
+
+nav#tabbar button {
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 12px;
+  padding: 8px 12px;
+  min-height: 48px;
+  width: auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border-radius: 8px;
+}
+nav#tabbar button[aria-current='page'] {
+  color: var(--accent-deep);
+  font-weight: 700;
+}
+
+/* Chat (Report flow conversational fallback / not used on web, kept for parity) */
+
+.chat-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bubble {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 14px;
+}
+.bubble.assistant { background: var(--raised); align-self: flex-start; }
+.bubble.user { background: var(--accent-deep); color: white; align-self: flex-end; }
+
+/* Utilities */
+
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; gap: 12px; }
+.muted { color: var(--ink-muted); }
+.timeline-line { font-size: 14px; color: var(--ink); }
+.body-block {
+  background: var(--sunken);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  white-space: pre-wrap;
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 15px;
+}
