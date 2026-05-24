@@ -54,12 +54,19 @@ export function PassportView({ profile, onEdit, onExport }: Props) {
     return (
       <AppShell>
         <AppHeader title="Accessibility passport" overline="Show staff" />
-        <Text style={styles.empty}>Your passport is empty. Add details to share with staff.</Text>
-        <BigActionButton
-          label="Edit profile"
-          hint="Fill in your accessibility profile"
-          onPress={onEdit}
-        />
+        <GlassSurface tint="card" cornerRadius={16} style={styles.emptyCard}>
+          <Text style={styles.emptyTitle}>Set up your passport</Text>
+          <Text style={styles.emptyBody}>
+            Staff can see your access needs at a glance. Takes about 90 seconds and stays on your
+            device.
+          </Text>
+          <BigActionButton
+            label="Set up passport"
+            hint="Fill in your accessibility profile"
+            onPress={onEdit}
+          />
+          <Text style={styles.emptyCaption}>You can skip anything and come back later.</Text>
+        </GlassSurface>
       </AppShell>
     );
   }
@@ -188,6 +195,10 @@ function Fact({ text }: { text: string }) {
 
 const styles = StyleSheet.create({
   empty: { ...type.body, color: colors.ink.muted, marginVertical: space.md },
+  emptyCard: { padding: space.lg, gap: space.md },
+  emptyTitle: { ...type.title, color: colors.ink.primary },
+  emptyBody: { ...type.body, color: colors.ink.primary },
+  emptyCaption: { ...type.caption, color: colors.ink.muted },
   section: { gap: space.xs, padding: space.md },
   factList: { gap: space.xs },
   fact: { ...type.body, color: colors.ink.primary, fontSize: 18, lineHeight: 26 },

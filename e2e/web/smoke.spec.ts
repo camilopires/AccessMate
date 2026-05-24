@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-// Skip the onboarding wizard for every test except the dedicated one below
-// by seeding localStorage before any navigation.
-test.beforeEach(async ({ page }, testInfo) => {
-  if (testInfo.title.startsWith('onboarding')) return;
+// Seed defaults so each test starts from a known settings state.
+test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     try {
       window.localStorage.setItem(
@@ -14,7 +12,6 @@ test.beforeEach(async ({ page }, testInfo) => {
           highContrast: false,
           reduceMotion: false,
           aiProvider: 'off',
-          onboardingComplete: true,
         }),
       );
     } catch {
@@ -52,13 +49,14 @@ test('settings tab opens settings', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
 });
 
-test('onboarding redirect on first run, Set up later returns to Incidents tab', async ({
+test('first run lands on Incidents directly; Passport empty state shows the set-up CTA', async ({
   page,
 }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Welcome to AccessMate' })).toBeVisible();
-  await page.getByRole('button', { name: /set up later/i }).click();
   await expect(page.getByRole('heading', { name: 'Incidents' })).toBeVisible();
+  await page.getByRole('tab', { name: /passport/i }).click();
+  await expect(page.getByRole('heading', { name: /set up your passport/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /set up passport/i })).toBeVisible();
 });
 
 test('report flow (template): walks 4 steps → lands on incident detail', async ({ page }) => {
@@ -81,10 +79,10 @@ test('report flow (template): walks 4 steps → lands on incident detail', async
   await expect(page.getByRole('button', { name: /^send$/i })).toBeVisible();
 });
 
-test('passport edit flow: empty → edit → toggle → save → fact visible', async ({ page }) => {
+test('passport edit flow: empty → set up → toggle → save → fact visible', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('tab', { name: /passport/i }).click();
-  await page.getByRole('button', { name: /edit profile/i }).click();
+  await page.getByRole('button', { name: /set up passport/i }).click();
   await expect(page.getByRole('heading', { name: 'Your accessibility profile' })).toBeVisible();
   await page.getByRole('switch', { name: 'Hard of hearing' }).click();
   await page.getByRole('button', { name: /save profile/i }).click();

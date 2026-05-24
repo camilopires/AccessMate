@@ -18,11 +18,14 @@ const filled: Profile = {
 };
 
 describe('PassportView', () => {
-  it('shows a clear empty state when nothing is filled in', () => {
+  it('shows a clear empty state inviting setup when nothing is filled in', () => {
+    const onEdit = jest.fn();
     render(
-      <PassportView profile={{ emergencyContacts: [] }} onEdit={() => {}} onExport={() => {}} />,
+      <PassportView profile={{ emergencyContacts: [] }} onEdit={onEdit} onExport={() => {}} />,
     );
-    expect(screen.getByText(/passport is empty/i)).toBeTruthy();
+    expect(screen.getByText(/set up your passport/i)).toBeTruthy();
+    fireEvent.press(screen.getByRole('button', { name: /set up passport/i }));
+    expect(onEdit).toHaveBeenCalledTimes(1);
   });
 
   it('shows mobility, sensory, comms, medical, blue-badge facts when filled', () => {
