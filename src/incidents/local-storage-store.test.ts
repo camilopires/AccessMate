@@ -85,3 +85,66 @@ describe('LocalStorageIncidentStore', () => {
     expect(store.listInProgress()).toHaveLength(0);
   });
 });
+
+describe('LocalStorageIncidentStore — v0.2 lifecycle', () => {
+  let store: LocalStorageIncidentStore;
+  beforeEach(() => {
+    store = makeStore().store;
+  });
+
+  it('saveDraft persists a draft incident with facts and draftBody', () => {
+    const draft = store.saveDraft({
+      title: 'Missed assist',
+      facts: { mode: 'rail', operatorName: 'Avanti', scenarioId: 'missed-passenger-assist' },
+      templateId: 'missed-passenger-assist',
+      draftBody: '# Draft body',
+      recipient: 'complaints@avanti.com',
+    });
+    expect(draft.status).toBe('draft');
+    expect(store.get(draft.id)?.title).toBe('Missed assist');
+    expect(store.get(draft.id)?.draftBody).toContain('Draft body');
+    expect(store.listByStatus('draft')).toHaveLength(1);
+  });
+
+  it('markSent transitions draft → in_progress and stamps sentAtISO', () => {
+    const draft = store.saveDraft({});
+    store.markSent(draft.id);
+    const after = store.get(draft.id)!;
+    expect(after.status).toBe('in_progress');
+    expect(after.sentAtISO).toBeTruthy();
+    expect(store.listByStatus('in_progress')).toHaveLength(1);
+  });
+
+  it('appendEvent records an operator_response sub-event', () => {
+    const draft = store.saveDraft({});
+    store.markSent(draft.id);
+    store.appendEvent(draft.id, {
+      kind: 'operator_response',
+      atISO: '2026-06-01T10:00:00Z',
+      bodyMarkdown: 'We regret...',
+    });
+    expect(store.get(draft.id)?.events).toHaveLength(1);
+  });
+
+  it('markCompleted transitions to completed, stamps resolvedAtISO, and appends a marked_resolved event', () => {
+    const draft = store.saveDraft({});
+    store.markSent(draft.id);
+    store.markCompleted(draft.id);
+    const after = store.get(draft.id)!;
+    expect(after.status).toBe('completed');
+    expect(after.resolvedAtISO).toBeTruthy();
+    expect(after.events.find((e) => e.kind === 'marked_resolved')).toBeTruthy();
+  });
+
+  it('listByStatus filters cleanly across the lifecycle', () => {
+    const a = store.saveDraft({ title: 'A' });
+    const b = store.saveDraft({ title: 'B' });
+    store.saveDraft({ title: 'C' });
+    store.markSent(a.id);
+    store.markSent(b.id);
+    store.markCompleted(b.id);
+    expect(store.listByStatus('draft').map((i) => i.title)).toEqual(['C']);
+    expect(store.listByStatus('in_progress').map((i) => i.title)).toEqual(['A']);
+    expect(store.listByStatus('completed').map((i) => i.title)).toEqual(['B']);
+  });
+});

@@ -12,6 +12,7 @@ const incident: Incident = {
   summary: 'Missed Passenger Assist at Euston',
   operatorId: 'avanti-west-coast',
   location: { lat: 51.528, lng: -0.1339, label: 'Euston' },
+  events: [],
 };
 
 const profile: Profile = {
