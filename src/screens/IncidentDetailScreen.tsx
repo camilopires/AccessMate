@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { AppShell } from '../components/AppShell';
 import { AppHeader } from '../components/AppHeader';
 import { BigActionButton } from '../components/BigActionButton';
+import { GlassSurface } from '../components/GlassSurface';
 import { SectionLabel } from '../components/SectionLabel';
 import { StatusBadge } from '../incidents/StatusBadge';
 import { colors, space, type } from '../theme';
@@ -53,7 +54,7 @@ export function IncidentDetailScreen({
       </View>
 
       {(incident.sentAtISO || incident.resolvedAtISO || incident.events.length > 0) && (
-        <View>
+        <GlassSurface tint="card" cornerRadius={16} style={styles.card}>
           <SectionLabel>Timeline</SectionLabel>
           <View style={styles.timeline}>
             {incident.sentAtISO && (
@@ -73,14 +74,14 @@ export function IncidentDetailScreen({
                 </Text>
               )}
           </View>
-        </View>
+        </GlassSurface>
       )}
 
       {incident.draftBody && (
-        <View>
+        <GlassSurface tint="card" cornerRadius={16} style={styles.card}>
           <SectionLabel>Outgoing letter</SectionLabel>
           <Text style={styles.body}>{incident.draftBody}</Text>
-        </View>
+        </GlassSurface>
       )}
 
       <View style={styles.actions}>
@@ -140,6 +141,7 @@ export function IncidentDetailScreen({
 const styles = StyleSheet.create({
   statusRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   meta: { ...type.caption, color: colors.ink.muted },
+  card: { padding: space.md, gap: space.xs },
   timeline: { gap: 4 },
   timelineLine: { ...type.caption, color: colors.ink.primary },
   body: {

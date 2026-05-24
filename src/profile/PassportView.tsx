@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { AppShell } from '../components/AppShell';
 import { AppHeader } from '../components/AppHeader';
 import { BigActionButton } from '../components/BigActionButton';
+import { GlassSurface } from '../components/GlassSurface';
 import { SectionLabel } from '../components/SectionLabel';
 import { colors, space, type } from '../theme';
 import type { Profile } from './schemas';
@@ -170,10 +171,10 @@ export function PassportView({ profile, onEdit, onExport }: Props) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <View style={styles.section}>
+    <GlassSurface tint="card" cornerRadius={16} style={styles.section}>
       <SectionLabel>{title}</SectionLabel>
       <View style={styles.factList}>{children}</View>
-    </View>
+    </GlassSurface>
   );
 }
 
@@ -187,7 +188,7 @@ function Fact({ text }: { text: string }) {
 
 const styles = StyleSheet.create({
   empty: { ...type.body, color: colors.ink.muted, marginVertical: space.md },
-  section: { gap: space.xs },
+  section: { gap: space.xs, padding: space.md },
   factList: { gap: space.xs },
   fact: { ...type.body, color: colors.ink.primary, fontSize: 18, lineHeight: 26 },
   actions: { gap: space.sm, marginTop: space.xl },

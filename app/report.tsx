@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { Alert } from 'react-native';
+import { Alert, View, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ReportForm } from '../src/screens/ReportForm';
 import { loadComplaintTemplates } from '../src/incidents/templates';
 import { loadBundledOperators } from '../src/content/operators';
 import { getIncidentStore } from '../src/incidents/factory';
+import { GlassSurface } from '../src/components/GlassSurface';
 
 export default function ReportRoute() {
   const router = useRouter();
@@ -12,10 +13,11 @@ export default function ReportRoute() {
   const templates = useMemo(() => loadComplaintTemplates(), []);
   const store = useMemo(() => getIncidentStore(), []);
 
-  return (
+  const form = (
     <ReportForm
       operators={operators}
       templates={templates}
+      transparent={Platform.OS === 'ios'}
       onCancel={() => router.back()}
       onComplete={(draft) => {
         try {
@@ -34,4 +36,18 @@ export default function ReportRoute() {
       }}
     />
   );
+
+  if (Platform.OS === 'ios') {
+    return (
+      <GlassSurface tint="sheet" cornerRadius={24} style={styles.sheet}>
+        <View style={styles.sheetInner}>{form}</View>
+      </GlassSurface>
+    );
+  }
+  return form;
 }
+
+const styles = StyleSheet.create({
+  sheet: { flex: 1 },
+  sheetInner: { flex: 1, backgroundColor: 'transparent' },
+});

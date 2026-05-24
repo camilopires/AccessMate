@@ -26,6 +26,8 @@ interface Props {
   templates: ComplaintTemplate[];
   onComplete: (draft: ReportDraft) => void;
   onCancel: () => void;
+  /** Drop the paper background so a parent glass surface shows through. */
+  transparent?: boolean;
 }
 
 type Step = 1 | 2 | 3 | 4;
@@ -37,7 +39,13 @@ const STEP_TITLES: Record<Step, string> = {
   4: 'Were you alone or accompanied?',
 };
 
-export function ReportForm({ operators, templates, onComplete, onCancel }: Props) {
+export function ReportForm({
+  operators,
+  templates,
+  onComplete,
+  onCancel,
+  transparent = false,
+}: Props) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const [step, setStep] = useState<Step>(1);
   const [whenISO, setWhenISO] = useState<string>(today);
@@ -85,7 +93,7 @@ export function ReportForm({ operators, templates, onComplete, onCancel }: Props
   };
 
   return (
-    <AppShell back={false}>
+    <AppShell back={false} transparent={transparent}>
       <AppHeader title="New report" overline={`Step ${step} of 4`} />
 
       <View style={styles.progress}>

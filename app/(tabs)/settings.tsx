@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { AppShell } from '../../src/components/AppShell';
 import { AppHeader } from '../../src/components/AppHeader';
 import { BigActionButton } from '../../src/components/BigActionButton';
+import { GlassSurface } from '../../src/components/GlassSurface';
 import { ProfileChip } from '../../src/components/ProfileChip';
 import { SectionLabel } from '../../src/components/SectionLabel';
 import { getSettingsStore } from '../../src/settings/factory';
@@ -53,7 +54,7 @@ export default function SettingsScreen() {
     <AppShell>
       <AppHeader title="Settings" overline="Preferences" />
 
-      <View style={styles.section}>
+      <GlassSurface tint="card" cornerRadius={16} style={styles.section}>
         <SectionLabel>Accessibility</SectionLabel>
         <View style={styles.row}>
           <ProfileChip
@@ -78,9 +79,9 @@ export default function SettingsScreen() {
             />
           ))}
         </View>
-      </View>
+      </GlassSurface>
 
-      <View style={styles.section}>
+      <GlassSurface tint="card" cornerRadius={16} style={styles.section}>
         <SectionLabel>AI provider</SectionLabel>
         <View style={styles.row}>
           {AI_PROVIDERS.map((p) => (
@@ -96,9 +97,9 @@ export default function SettingsScreen() {
           On-device and cloud AI light up the &ldquo;Polish with AI&rdquo; button in the complaint
           composer. Stays off by default.
         </Text>
-      </View>
+      </GlassSurface>
 
-      <View style={styles.section}>
+      <GlassSurface tint="card" cornerRadius={16} style={styles.section}>
         <SectionLabel>Your data</SectionLabel>
         <BigActionButton
           label="Export all data (JSON)"
@@ -116,22 +117,22 @@ export default function SettingsScreen() {
           variant="ghost"
           onPress={onWipe}
         />
-      </View>
+      </GlassSurface>
 
-      <View style={styles.section}>
+      <GlassSurface tint="card" cornerRadius={16} style={styles.section}>
         <SectionLabel>About</SectionLabel>
         <Text style={styles.body}>
           AccessMate is an accessibility-first travel companion. All data stays on your device
           unless you explicitly share or export it. Encrypted cross-device sync is planned for the
           native release.
         </Text>
-      </View>
+      </GlassSurface>
     </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  section: { gap: space.sm },
+  section: { gap: space.sm, padding: space.md },
   row: { flexDirection: 'row', flexWrap: 'wrap' },
   caption: { ...type.caption, color: colors.ink.muted },
   body: { ...type.body, color: colors.ink.primary },

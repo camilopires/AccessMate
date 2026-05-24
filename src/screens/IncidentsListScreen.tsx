@@ -5,6 +5,7 @@ import { AppHeader } from '../components/AppHeader';
 import { EmergencyCard } from '../components/EmergencyCard';
 import { DestinationCard } from '../components/DestinationCard';
 import { ProfileChip } from '../components/ProfileChip';
+import { GlassSurface } from '../components/GlassSurface';
 import { StatusBadge } from '../incidents/StatusBadge';
 import { colors, space, type } from '../theme';
 import type { Incident } from '../incidents/schemas';
@@ -46,40 +47,45 @@ export function IncidentsListScreen({ incidents, onNewReport, onOpenIncident }: 
         caption="Tell AccessMate what happened — we'll guide you through it."
         onPress={onNewReport}
       />
-      <View style={styles.filterRow}>
-        {FILTERS.map((f) => (
-          <ProfileChip
-            key={f.id}
-            label={`${f.label} (${counts[f.id]})`}
-            selected={filter === f.id}
-            onToggle={() => setFilter(f.id)}
-          />
-        ))}
-      </View>
+      <GlassSurface tint="card" cornerRadius={16} style={styles.section}>
+        <View style={styles.filterRow}>
+          {FILTERS.map((f) => (
+            <ProfileChip
+              key={f.id}
+              label={`${f.label} (${counts[f.id]})`}
+              selected={filter === f.id}
+              onToggle={() => setFilter(f.id)}
+            />
+          ))}
+        </View>
+      </GlassSurface>
       {visible.length === 0 ? (
         <Text style={styles.empty}>{EMPTY[filter]}</Text>
       ) : (
-        <View>
-          {visible.map((item) => (
-            <View key={item.id} style={styles.row}>
-              <DestinationCard
-                title={item.title ?? 'Untitled incident'}
-                caption={`${item.startedAtISO.slice(0, 10)}${item.facts?.operatorName ? ` · ${item.facts.operatorName}` : ''}`}
-                onPress={() => onOpenIncident(item.id)}
-              />
-              <View style={styles.badge} pointerEvents="none">
-                <StatusBadge status={item.status} />
+        <GlassSurface tint="card" cornerRadius={16} style={styles.section}>
+          <View>
+            {visible.map((item) => (
+              <View key={item.id} style={styles.row}>
+                <DestinationCard
+                  title={item.title ?? 'Untitled incident'}
+                  caption={`${item.startedAtISO.slice(0, 10)}${item.facts?.operatorName ? ` · ${item.facts.operatorName}` : ''}`}
+                  onPress={() => onOpenIncident(item.id)}
+                />
+                <View style={styles.badge} pointerEvents="none">
+                  <StatusBadge status={item.status} />
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        </GlassSurface>
       )}
     </AppShell>
   );
 }
 
 const styles = StyleSheet.create({
-  filterRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: space.xs },
+  section: { padding: space.sm },
+  filterRow: { flexDirection: 'row', flexWrap: 'wrap' },
   empty: { ...type.body, color: colors.ink.muted },
   row: { position: 'relative' },
   badge: { position: 'absolute', right: space.lg, top: space.base },

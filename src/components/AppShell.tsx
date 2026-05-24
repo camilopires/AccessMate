@@ -13,9 +13,18 @@ interface Props {
    *  router.back(). Set to false on the home / onboarding screens which
    *  sit at the top of the stack. */
   back?: boolean;
+  /** When true, the SafeAreaView background is transparent so a parent
+   *  GlassSurface (e.g. modal sheet root) shows through. */
+  transparent?: boolean;
 }
 
-export function AppShell({ children, scroll = true, pad = space.lg, back = true }: Props) {
+export function AppShell({
+  children,
+  scroll = true,
+  pad = space.lg,
+  back = true,
+  transparent = false,
+}: Props) {
   const router = useRouter();
   const canGoBack = back && (router.canGoBack?.() ?? false);
   const inner = (
@@ -36,7 +45,7 @@ export function AppShell({ children, scroll = true, pad = space.lg, back = true 
     </View>
   );
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={[styles.safe, transparent && styles.safeTransparent]}>
       <StatusBar style="dark" />
       {scroll ? (
         <ScrollView
@@ -54,6 +63,7 @@ export function AppShell({ children, scroll = true, pad = space.lg, back = true 
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg.paper },
+  safeTransparent: { backgroundColor: 'transparent' },
   scrollContent: { flexGrow: 1 },
   inner: { paddingTop: space.lg, gap: space.lg },
   back: {
