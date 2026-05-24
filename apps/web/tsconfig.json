@@ -13,7 +13,8 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "jsx": "preserve",
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "types": ["vite/client"]
   },
   "include": ["src", "index.html"]
 }
