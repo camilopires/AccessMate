@@ -7,5 +7,10 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
-  "exclude": ["node_modules", "worker", "modules/apple-fm/src/index.ts"]
+  "exclude": [
+    "node_modules",
+    "worker",
+    "modules/apple-fm/src/index.ts",
+    "modules/glass-surface/src/index.ts"
+  ]
 }
