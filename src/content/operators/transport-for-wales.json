@@ -1,0 +1,15 @@
+{
+  "id": "transport-for-wales",
+  "name": "Transport for Wales",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-3333-211-202",
+    "bookingUrl": "https://tfw.wales/help-and-contact/accessibility/passenger-assist",
+    "accessibilityPageUrl": "https://tfw.wales/help-and-contact/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "customer.relations@tfwrail.wales",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}

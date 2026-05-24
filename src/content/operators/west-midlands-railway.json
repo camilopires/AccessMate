@@ -1,0 +1,15 @@
+{
+  "id": "west-midlands-railway",
+  "name": "West Midlands Railway",
+  "mode": "rail",
+  "assistance": {
+    "phone": "+44-800-024-8998",
+    "bookingUrl": "https://www.westmidlandsrailway.co.uk/travel-information/accessibility/passenger-assistance",
+    "accessibilityPageUrl": "https://www.westmidlandsrailway.co.uk/travel-information/accessibility"
+  },
+  "complaintsRoute": {
+    "primaryEmail": "comments@wmtrains.co.uk",
+    "regulator": "orr"
+  },
+  "lastVerifiedUTC": "2026-05-24T00:00:00Z"
+}
