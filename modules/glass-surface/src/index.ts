@@ -4,7 +4,6 @@ import type { GlassSurfaceViewProps } from './GlassSurface.types';
 
 export * from './GlassSurface.types';
 
-const NativeView: ComponentType<GlassSurfaceViewProps> =
-  requireNativeViewManager('GlassSurface');
+const NativeView: ComponentType<GlassSurfaceViewProps> = requireNativeViewManager('GlassSurface');
 
 export default NativeView;

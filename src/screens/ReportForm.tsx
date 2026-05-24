@@ -98,7 +98,11 @@ export function ReportForm({ operators, templates, onComplete, onCancel }: Props
 
       {step === 1 && (
         <View style={styles.row}>
-          <ProfileChip label="Today" selected={whenISO === today} onToggle={() => setWhenISO(today)} />
+          <ProfileChip
+            label="Today"
+            selected={whenISO === today}
+            onToggle={() => setWhenISO(today)}
+          />
           <ProfileChip
             label="Yesterday"
             selected={whenISO === yesterday()}
@@ -166,7 +170,12 @@ export function ReportForm({ operators, templates, onComplete, onCancel }: Props
           onPress={next}
         />
         {step === 1 && (
-          <BigActionButton label="Cancel" hint="Close without saving" variant="ghost" onPress={onCancel} />
+          <BigActionButton
+            label="Cancel"
+            hint="Close without saving"
+            variant="ghost"
+            onPress={onCancel}
+          />
         )}
         {step > 1 && (
           <BigActionButton
@@ -178,7 +187,9 @@ export function ReportForm({ operators, templates, onComplete, onCancel }: Props
         )}
       </View>
 
-      <Text style={styles.note}>Step {step} of 4. You can change anything from the editor afterwards.</Text>
+      <Text style={styles.note}>
+        Step {step} of 4. You can change anything from the editor afterwards.
+      </Text>
     </AppShell>
   );
 }

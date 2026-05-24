@@ -77,9 +77,7 @@ test('report flow (template): walks 4 steps → lands on incident detail', async
   await page.getByRole('switch', { name: 'Alone' }).click();
   await page.getByRole('button', { name: /draft complaint/i }).click();
   // Lands on incident detail
-  await expect(
-    page.getByRole('heading', { name: /missed passenger assist/i })
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: /missed passenger assist/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /^send$/i })).toBeVisible();
 });
 

@@ -62,6 +62,15 @@ If any of these are missing, install them now. The plan assumes they're in place
 
 # Phase 1 — Foundations + thin slice
 
+> **v0.2 scope cut superseded much of what follows (2026-05-24).** The user
+> pivoted to a 3-tab IA — Incidents (default) · Passport · Settings —
+> collapsing the Complaint store into Incident and deleting Home,
+> Directory, Share, and Compose as standalone destinations. See
+> `docs/plans/2026-05-24-accessmate-scope-cut-design.md` for the design
+> and `docs/plans/2026-05-24-accessmate-scope-cut-implementation.md`
+> for the execution plan. The Phase 1–8 status blocks below describe
+> the pre-cut shape and remain accurate for that snapshot.
+>
 > **Batch 3 autonomous run (2026-05-23):** delivered Phases 2 through 9 in a
 > single uninterrupted session per the user's "continue until whole app is
 > done, don't wait for my approval" directive. See the per-phase notes below

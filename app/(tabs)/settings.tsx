@@ -30,7 +30,7 @@ export default function SettingsScreen() {
   const onWipe = () => {
     Alert.alert(
       'Wipe all data?',
-      'This permanently removes all profiles, incidents, complaints, and settings on this device.',
+      'This permanently removes your profile, incidents, drafts, and settings on this device.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -102,7 +102,7 @@ export default function SettingsScreen() {
         <SectionLabel>Your data</SectionLabel>
         <BigActionButton
           label="Export all data (JSON)"
-          hint="Download every saved profile, incident, and complaint"
+          hint="Download your profile and every incident on this device"
           variant="secondary"
           onPress={() => {
             exportAllData().catch((e) =>

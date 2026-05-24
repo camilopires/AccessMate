@@ -38,7 +38,11 @@ export function GlassSurface({ tint = 'card', style, children, ...rest }: Props)
 
 function paperFallback(tint: GlassTint): ViewStyle {
   if (tint === 'chrome') {
-    return { backgroundColor: colors.bg.paper, borderTopWidth: 1, borderTopColor: colors.line.hairline };
+    return {
+      backgroundColor: colors.bg.paper,
+      borderTopWidth: 1,
+      borderTopColor: colors.line.hairline,
+    };
   }
   if (tint === 'sheet') {
     return { backgroundColor: colors.bg.raised };

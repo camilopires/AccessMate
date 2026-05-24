@@ -15,29 +15,30 @@ describe('ReportForm', () => {
         templates={templates}
         onComplete={() => {}}
         onCancel={() => {}}
-      />
+      />,
     );
     expect(screen.getByRole('header', { name: /when did this happen/i })).toBeTruthy();
     expect(screen.getByRole('button', { name: /^next$/i })).toBeTruthy();
   });
 
   it('walks the 4 steps and calls onComplete with a draft', () => {
-    const onComplete = jest.fn<
-      (draft: {
-        title: string;
-        facts: { scenarioId?: string; accompanied?: boolean; operatorName?: string };
-        templateId: string;
-        draftBody: string;
-        recipient?: string;
-      }) => void
-    >();
+    const onComplete =
+      jest.fn<
+        (draft: {
+          title: string;
+          facts: { scenarioId?: string; accompanied?: boolean; operatorName?: string };
+          templateId: string;
+          draftBody: string;
+          recipient?: string;
+        }) => void
+      >();
     render(
       <ReportForm
         operators={operators}
         templates={templates}
         onComplete={onComplete}
         onCancel={() => {}}
-      />
+      />,
     );
     // Step 1: When? — date defaults to today; Next.
     fireEvent.press(screen.getByRole('button', { name: /^next$/i }));
@@ -70,7 +71,7 @@ describe('ReportForm', () => {
         templates={templates}
         onComplete={() => {}}
         onCancel={onCancel}
-      />
+      />,
     );
     fireEvent.press(screen.getByRole('button', { name: /cancel/i }));
     expect(onCancel).toHaveBeenCalledTimes(1);
