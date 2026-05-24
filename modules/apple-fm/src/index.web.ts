@@ -1,4 +1,8 @@
-import type { AppleFmAvailability, AppleFmNativeModule } from './AppleFm.types';
+import type {
+  AppleFmAvailability,
+  AppleFmConversationTurn,
+  AppleFmNativeModule,
+} from './AppleFm.types';
 
 export * from './AppleFm.types';
 
@@ -11,6 +15,15 @@ const AppleFm: AppleFmNativeModule = {
   },
   async polish(): Promise<string> {
     throw new Error('AppleFm is not available on this platform');
+  },
+  async startConversation(): Promise<string> {
+    throw new Error('AppleFm is not available on this platform');
+  },
+  async sendMessage(): Promise<AppleFmConversationTurn> {
+    throw new Error('AppleFm is not available on this platform');
+  },
+  async endConversation(): Promise<void> {
+    // no-op
   },
 };
 

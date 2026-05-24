@@ -7,6 +7,9 @@ function fakeModule(overrides: Partial<AppleFmNativeModule> = {}): AppleFmNative
     isAvailable: async () => true,
     getAvailability: async () => ({ available: true }) as const,
     polish: async () => 'polished',
+    startConversation: async () => 'noop-session',
+    sendMessage: async () => ({ assistantText: '', isComplete: true }),
+    endConversation: async () => {},
     ...overrides,
   };
 }
