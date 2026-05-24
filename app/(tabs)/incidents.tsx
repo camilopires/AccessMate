@@ -1,12 +1,20 @@
-import { Text } from 'react-native';
-import { AppShell } from '../../src/components/AppShell';
-import { AppHeader } from '../../src/components/AppHeader';
+import { useMemo, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { IncidentsListScreen } from '../../src/screens/IncidentsListScreen';
+import { getIncidentStore } from '../../src/incidents/factory';
 
 export default function IncidentsTab() {
+  const router = useRouter();
+  const store = useMemo(() => getIncidentStore(), []);
+  const [incidents] = useState(() =>
+    store.listAll().filter((i) => i.status !== 'discarded')
+  );
+
   return (
-    <AppShell>
-      <AppHeader title="Incidents" overline="Today" />
-      <Text>Coming online in Task B2.</Text>
-    </AppShell>
+    <IncidentsListScreen
+      incidents={incidents}
+      onNewReport={() => router.push('/report')}
+      onOpenIncident={(id) => router.push({ pathname: '/incidents/[id]', params: { id } })}
+    />
   );
 }

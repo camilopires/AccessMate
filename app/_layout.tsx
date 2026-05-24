@@ -43,6 +43,8 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="profile/edit" />
           <Stack.Screen name="onboarding" />
+          <Stack.Screen name="incidents/[id]" />
+          <Stack.Screen name="report" options={{ presentation: 'modal' }} />
         </Stack>
       ) : (
         <View style={{ flex: 1, backgroundColor: colors.bg.paper }} />
