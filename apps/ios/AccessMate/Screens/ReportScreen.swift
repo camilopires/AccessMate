@@ -4,7 +4,26 @@ struct ReportScreen: View {
     @EnvironmentObject var stores: Stores
     @Environment(\.dismiss) private var dismiss
 
+    /// Optional pre-fill from the conversational flow when the user
+    /// switches to the form.
+    let initialFacts: IncidentFacts?
     let onCreated: (String) -> Void
+
+    init(initialFacts: IncidentFacts? = nil, onCreated: @escaping (String) -> Void) {
+        self.initialFacts = initialFacts
+        self.onCreated = onCreated
+        let date: Date = initialFacts?.whenISO.flatMap {
+            ISO8601DateFormatter().date(from: $0)
+        } ?? Date()
+        _whenDate = State(initialValue: date)
+        _selectedOperatorId = State(initialValue:
+            initialFacts?.operatorName.flatMap { name in
+                BundledData.operators.first(where: { $0.name == name })?.id
+            }
+        )
+        _selectedScenarioId = State(initialValue: initialFacts?.scenarioId)
+        _accompanied = State(initialValue: initialFacts?.accompanied)
+    }
 
     @State private var whenDate: Date = Date()
     @State private var selectedOperatorId: String?

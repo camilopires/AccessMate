@@ -70,12 +70,28 @@ struct IncidentsScreen: View {
         }
         .sheet(isPresented: $presentingReport) {
             NavigationStack {
-                ReportScreen { newIncidentId in
-                    presentingReport = false
-                    // navigate to the new incident
+                if shouldUseConversational {
+                    ConversationalReportScreen { newIncidentId in
+                        presentingReport = false
+                    }
+                } else {
+                    ReportScreen { newIncidentId in
+                        presentingReport = false
+                    }
                 }
             }
         }
+    }
+
+    /// Conversational AI intake is iOS 26+ only AND only when Apple
+    /// Foundation Models reports availability. Everything else falls
+    /// back to the 4-step template form. The decision is taken at sheet
+    /// mount time so it stays stable for the duration of one report.
+    private var shouldUseConversational: Bool {
+        if #available(iOS 26.0, *) {
+            return AppleFMSession.isAvailable()
+        }
+        return false
     }
 
     private var header: some View {
