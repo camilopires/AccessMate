@@ -105,6 +105,15 @@ export function renderIncidentDetail(
       h(
         'button',
         {
+          className: 'secondary',
+          onclick: () => window.print(),
+        },
+        h('span', {}, 'Print / save as PDF'),
+        h('span', { className: 'hint' }, 'Uses your browser print dialog'),
+      ),
+      h(
+        'button',
+        {
           className: 'ghost',
           onclick: () => {
             setStatus(inc.id, 'draft');
@@ -124,6 +133,7 @@ export function renderIncidentDetail(
           onclick: () => window.print(),
         },
         h('span', {}, 'Print / save as PDF'),
+        h('span', { className: 'hint' }, 'Uses your browser print dialog'),
       ),
       h(
         'button',

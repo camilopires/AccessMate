@@ -7,9 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import android.content.Intent
 import androidx.navigation.NavController
 import com.accessmate.data.IncidentStatus
+import com.accessmate.data.PdfExport
 import com.accessmate.ui.appModel
 import java.time.Instant
 
@@ -19,6 +22,7 @@ fun IncidentDetailScreen(nav: NavController, id: String) {
     val vm = appModel()
     val incidents by vm.incidents.collectAsState()
     val inc = incidents.firstOrNull { it.id == id }
+    val ctx = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -88,8 +92,20 @@ fun IncidentDetailScreen(nav: NavController, id: String) {
                         },
                         modifier = Modifier.fillMaxWidth(),
                     ) { Text("Mark as resolved") }
+                    OutlinedButton(
+                        onClick = {
+                            ctx.startActivity(Intent.createChooser(PdfExport.makeAndShareIntent(ctx, inc), "Share PDF"))
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Export PDF") }
                 }
                 IncidentStatus.completed -> {
+                    OutlinedButton(
+                        onClick = {
+                            ctx.startActivity(Intent.createChooser(PdfExport.makeAndShareIntent(ctx, inc), "Share PDF"))
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Export PDF") }
                     OutlinedButton(
                         onClick = { vm.upsertIncident(inc.copy(status = IncidentStatus.in_progress)) },
                         modifier = Modifier.fillMaxWidth(),

@@ -370,3 +370,14 @@ nav#tabbar button[aria-current='page'] {
   font-family: 'Iowan Old Style', Georgia, serif;
   font-size: 15px;
 }
+
+/* Print: render the incident detail as a single-page PDF when the user
+   picks "Save as PDF" in their browser dialog. */
+@media print {
+  body { padding: 0; background: white; }
+  nav#tabbar { display: none; }
+  .chips, button { display: none; }
+  main { max-width: 100%; padding: 0; }
+  .body-block { background: transparent; padding: 0; }
+  .badge { background: transparent !important; color: black !important; border: 1px solid #888; }
+}

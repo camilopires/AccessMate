@@ -96,6 +96,16 @@ struct IncidentDetailScreen: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
             }
+            if inc.status == .completed || inc.status == .in_progress {
+                if let url = PDFExport.makePDF(for: inc) {
+                    ShareLink(item: url) {
+                        Label("Export PDF", systemImage: "square.and.arrow.up")
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                }
+            }
             if inc.status == .completed {
                 Button {
                     var next = inc; next.status = .in_progress
