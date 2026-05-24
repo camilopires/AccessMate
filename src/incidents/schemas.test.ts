@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Incident, MediaRef, IncidentStatus, MediaKind } from './schemas';
+import { Incident, MediaRef, IncidentStatus, MediaKind, IncidentEvent } from './schemas';
 
 describe('Incident schema', () => {
   it('accepts a minimal in-progress incident', () => {
@@ -80,6 +80,69 @@ describe('MediaRef schema', () => {
         kind: 'note',
         capturedAtISO: '2026-05-23T10:01:00Z',
       }),
+    ).toThrow();
+  });
+});
+
+describe('Incident schema (v0.2 merged fields)', () => {
+  it('accepts the merged complaint fields + draft status', () => {
+    const parsed = Incident.parse({
+      id: 'inc-x',
+      status: 'draft',
+      startedAtISO: '2026-05-23T10:00:00Z',
+      title: 'Missed assist at Euston',
+      facts: {
+        whenISO: '2026-05-23T10:00:00Z',
+        mode: 'rail',
+        operatorName: 'Avanti West Coast',
+        scenarioId: 'missed-passenger-assist',
+        narrative: 'No ramp at the door.',
+        accompanied: false,
+        waitedMinutes: 25,
+      },
+      templateId: 'missed-passenger-assist',
+      draftBody: '# Missed Passenger Assist\n\nDear...',
+      recipient: 'customer.resolutions@avantiwestcoast.co.uk',
+      events: [],
+    });
+    expect(parsed.title).toBe('Missed assist at Euston');
+    expect(parsed.facts?.waitedMinutes).toBe(25);
+    expect(parsed.status).toBe('draft');
+  });
+
+  it('defaults events to []', () => {
+    const parsed = Incident.parse({
+      id: 'inc-y',
+      status: 'draft',
+      startedAtISO: '2026-05-23T10:00:00Z',
+    });
+    expect(parsed.events).toEqual([]);
+  });
+});
+
+describe('IncidentEvent schema', () => {
+  it('accepts an escalated_to_regulator event', () => {
+    const parsed = IncidentEvent.parse({
+      kind: 'escalated_to_regulator',
+      atISO: '2026-07-23T10:00:00Z',
+      regulator: 'orr',
+      draftBody: 'To the ORR...',
+    });
+    expect(parsed.kind).toBe('escalated_to_regulator');
+  });
+
+  it('accepts an operator_response event', () => {
+    const parsed = IncidentEvent.parse({
+      kind: 'operator_response',
+      atISO: '2026-06-23T10:00:00Z',
+      bodyMarkdown: 'We regret...',
+    });
+    expect(parsed.kind).toBe('operator_response');
+  });
+
+  it('rejects an unknown event kind', () => {
+    expect(() =>
+      IncidentEvent.parse({ kind: 'magic', atISO: '2026-06-23T10:00:00Z' }),
     ).toThrow();
   });
 });
