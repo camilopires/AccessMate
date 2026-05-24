@@ -4,7 +4,7 @@
 
 AccessMate helps disabled passengers carry their access needs from one journey to the next, capture what went wrong when something fails, and turn that capture into a complaint that the operator (and, if needed, the regulator) will actually act on. Everything lives on the device — there is no account, no cloud, no analytics.
 
-Current release: **v0.2.0** — three-pillar scope cut + Liquid Glass scaffold on iOS.
+Current release: **v0.3.0** — Liquid Glass live on iOS, conversational AI Report intake, onboarding folded into Passport, 20 real UK rail operators.
 
 ---
 
@@ -36,16 +36,14 @@ Accessibility preferences (high contrast, reduce motion, font scale), AI provide
 
 ## The Report flow
 
-When you tap **Start a new report**, a modal sheet walks you through four steps:
+When you tap **Start a new report**, a modal sheet opens. On iOS 26+ with on-device AI enabled it becomes a **conversational intake** — Apple FoundationModels asks one short question at a time, captures the four required facts (when, operator, scenario, alone-or-accompanied) plus any optional context, and hands off to draft assembly. Everything else (web, Android, older iOS, AI disabled) gets the structured **4-step template form**:
 
 1. **When did this happen?** — date defaults to today
-2. **Which operator?** — pick from the bundled UK rail operator list
+2. **Which operator?** — pick from the 20 UK rail operators
 3. **What happened?** — pick a scenario (e.g. _Missed Passenger Assist_, _Step-free route blocked_, _Assistance booked but no-show_)
 4. **Were you alone?** — alone / with a companion
 
-The flow then assembles a draft complaint addressed to the right recipient at that operator, pre-populated with your Passport details, the scenario template, and the facts you entered. You can edit the draft, send it, or save it for later. The whole interaction is designed to take under 90 seconds even on a moving train.
-
-The current 0.2.0 release ships the **structured template path**. A fully conversational on-device AI intake (using Apple FoundationModels on iOS 26+) is scaffolded in `modules/apple-fm/` and `src/ai/` and is the next milestone.
+Both flows end the same way: a draft complaint addressed to the right recipient at that operator, pre-populated with your Passport details, the scenario template, and the captured facts. You can edit the draft, send it, or save it for later. The interaction is designed to take under 90 seconds even on a moving train, and the conversational flow has a persistent **"Switch to form"** link so you can bail out without losing what you've captured.
 
 ---
 
@@ -55,7 +53,7 @@ A warm, civic, editorial aesthetic — closer to a Penguin paperback than a star
 
 - **Type:** Fraunces (display) + Manrope (body), via `@expo-google-fonts`
 - **Palette:** cream paper `#FAF7F2`, ink `#1B1A17`, amber accent (`accent.deep #7A3A0F` for anything small enough to need WCAG AA contrast, `accent.base #B85C1F` for headings and large surfaces)
-- **Liquid Glass on iOS 26+:** a Swift wrapper around `UIGlassMaterialView` lives in `modules/glass-surface/`; on older iOS and on web/Android it falls back to the warm paper surface
+- **Liquid Glass on iOS 26+:** a SwiftUI `.glassEffect(.regular, in: .rect(cornerRadius:))` panel hosted through `UIHostingController` (same pattern as `@expo/ui`'s `Host`) lives in `modules/glass-surface/`. Adopted on the **tab bar**, the **Report modal sheet**, and **every section card** across the three tabs and the Incident detail screen. Reduce Transparency swaps to a tinted opaque fallback live. Web and Android render the warm paper surface.
 - **Targets:** 56pt minimum touch targets everywhere (`BigActionButton`), full VoiceOver / TalkBack labels and hints, reduce-motion honored
 
 All colors used at body or caption size meet WCAG 2.2 AA, verified in CI by axe-core.
@@ -72,7 +70,7 @@ All colors used at body or caption size meet WCAG 2.2 AA, verified in CI by axe-
 | Persistence    | **SQLite** on native (`expo-sqlite`), `localStorage` on web — selected via a platform-aware store factory                        |
 | Schemas        | **Zod 4** discriminated unions for `IncidentEvent`, `IncidentFacts`, etc.                                                        |
 | iOS AI         | **Apple FoundationModels** (`SystemLanguageModel` / `LanguageModelSession`, iOS 26.0+) via local Expo module `modules/apple-fm/` |
-| iOS chrome     | **UIGlassMaterialView** (iOS 26.0+) wrapped by local Expo module `modules/glass-surface/`                                        |
+| iOS chrome     | **SwiftUI `.glassEffect(...)`** (iOS 26.0+) hosted via `UIHostingController` in local Expo module `modules/glass-surface/`       |
 | Notifications  | `expo-notifications` for follow-up reminders on stalled incidents                                                                |
 | Export / share | `expo-print` (PDF), `expo-sharing`, `expo-clipboard`                                                                             |
 | Web target     | `react-native-web` 0.21, static export                                                                                           |
@@ -89,10 +87,9 @@ app/                       expo-router file tree
     passport.tsx           tab 2
     settings.tsx           tab 3
   incidents/[id].tsx       incident detail (push route)
-  report.tsx               modal Report flow
+  report.tsx               modal Report flow (conversational on iOS+AI, template otherwise)
   profile/edit.tsx         passport editor
-  onboarding.tsx           first-run only
-  index.tsx                redirect to onboarding or /(tabs)/incidents
+  index.tsx                redirect to /(tabs)/incidents
   _layout.tsx              root Stack
 
 src/
@@ -107,8 +104,8 @@ src/
   theme/                   palette, type scale, spacing, glass tokens
 
 modules/
-  apple-fm/                Expo local native module: on-device AI on iOS 26+
-  glass-surface/           Expo local native module: UIGlassMaterialView wrapper
+  apple-fm/                Expo local native module: on-device AI on iOS 26+ (single-shot polish + multi-turn conversation)
+  glass-surface/           Expo local native module: SwiftUI .glassEffect() via UIHostingController
 
 e2e/web/                   Playwright + axe smoke suite (3-tab IA + Report flow)
 tests/                     jest-RNTL setup + a few cross-cutting tests
@@ -149,7 +146,7 @@ pnpm test:e2e       # playwright + axe-core — 3-tab IA + Report flow on web
 pnpm test           # unit + rn (no e2e — that one needs a web server)
 ```
 
-Counts at v0.2.0: **86 vitest + 34 jest-RNTL + 7 Playwright/axe**, all green.
+Counts at v0.3.0: **92 vitest + 38 jest-RNTL + 7 Playwright/axe**, all green.
 
 ---
 
@@ -166,14 +163,12 @@ Encrypted cross-device sync is on the roadmap for a later release and will be ex
 
 ## Roadmap
 
-The v0.2 scope cut is the foundation. Documented next steps (see `docs/plans/2026-05-24-accessmate-scope-cut-implementation.md`):
+The v0.3 release closes the v0.2 deferral list. Next up (see `docs/plans/2026-05-24-accessmate-v0.3-implementation.md` for what just landed):
 
-- **Conversational AI Report intake** — chat UI on top of `modules/apple-fm/`, with the template form as the offline fallback
-- **`<GlassSurface>` adoption** in tab bar, sheets, and chrome on iOS 26+ devices (needs on-device validation)
-- **Android Gemini Nano** adapter to mirror the on-device AI story
-- **Encrypted cross-device sync** (opt-in)
-- **Real operator dataset** — ~20 UK operators with current recipient addresses
-- **Phase 12** — independent a11y audit and community testing
+- **Android Gemini Nano** adapter to mirror the on-device AI story on Android (waiting on stable `MLKit GenAI` / `AICore` rollout across OEMs)
+- **Encrypted cross-device sync** (opt-in; v0.4 initiative — needs a backend + a key model + a privacy review)
+- **Phase 12** — independent a11y audit + community testing + store accounts (process tracks, not code)
+- **Annual operator-address re-verification** — see `docs/operators-verification.md`
 
 ---
 

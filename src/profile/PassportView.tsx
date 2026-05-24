@@ -55,7 +55,9 @@ export function PassportView({ profile, onEdit, onExport }: Props) {
       <AppShell>
         <AppHeader title="Accessibility passport" overline="Show staff" />
         <GlassSurface tint="card" cornerRadius={16} style={styles.emptyCard}>
-          <Text style={styles.emptyTitle}>Set up your passport</Text>
+          <Text accessibilityRole="header" style={styles.emptyTitle}>
+            Set up your passport
+          </Text>
           <Text style={styles.emptyBody}>
             Staff can see your access needs at a glance. Takes about 90 seconds and stays on your
             device.
