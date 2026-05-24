@@ -66,9 +66,15 @@ struct IncidentDetailScreen: View {
         VStack(spacing: 12) {
             if inc.status == .draft {
                 Button {
-                    let now = ISO8601DateFormatter().string(from: Date())
+                    let sentAt = Date()
+                    let now = ISO8601DateFormatter().string(from: sentAt)
                     var next = inc; next.status = .in_progress; next.sentAtISO = now
                     stores.incidents.upsert(next)
+                    Reminders.scheduleEscalateReminder(
+                        for: inc.id,
+                        sentAt: sentAt,
+                        title: inc.title ?? "your incident"
+                    )
                 } label: {
                     Label("Send to operator", systemImage: "paperplane.fill").frame(maxWidth: .infinity, minHeight: 48)
                 }
@@ -90,6 +96,7 @@ struct IncidentDetailScreen: View {
                     let now = ISO8601DateFormatter().string(from: Date())
                     var next = inc; next.status = .completed; next.resolvedAtISO = now
                     stores.incidents.upsert(next)
+                    Reminders.cancelEscalateReminder(for: inc.id)
                 } label: {
                     Label("Mark as resolved", systemImage: "checkmark.circle.fill").frame(maxWidth: .infinity, minHeight: 48)
                 }

@@ -13,6 +13,7 @@ import android.content.Intent
 import androidx.navigation.NavController
 import com.accessmate.data.IncidentStatus
 import com.accessmate.data.PdfExport
+import com.accessmate.data.Reminders
 import com.accessmate.ui.appModel
 import java.time.Instant
 
@@ -76,6 +77,7 @@ fun IncidentDetailScreen(nav: NavController, id: String) {
                         onClick = {
                             val now = Instant.now().toString()
                             vm.upsertIncident(inc.copy(status = IncidentStatus.in_progress, sentAtISO = now))
+                            Reminders.schedule(ctx, inc.id, inc.title ?: "your incident")
                         },
                         modifier = Modifier.fillMaxWidth(),
                     ) { Text("Send to operator") }
@@ -89,6 +91,7 @@ fun IncidentDetailScreen(nav: NavController, id: String) {
                         onClick = {
                             val now = Instant.now().toString()
                             vm.upsertIncident(inc.copy(status = IncidentStatus.completed, resolvedAtISO = now))
+                            Reminders.cancel(ctx, inc.id)
                         },
                         modifier = Modifier.fillMaxWidth(),
                     ) { Text("Mark as resolved") }
