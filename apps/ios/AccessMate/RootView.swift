@@ -8,6 +8,10 @@ struct RootView: View {
     }
 
     var body: some View {
+        // On iOS 26+ the TabView automatically adopts Liquid Glass for
+        // the bottom bar; on iOS 18-25 it's stock chrome. Either way,
+        // section cards inside each tab use CardSurface which switches
+        // to .glassEffect() on iOS 26+ too.
         TabView(selection: $selectedTab) {
             NavigationStack {
                 IncidentsScreen()

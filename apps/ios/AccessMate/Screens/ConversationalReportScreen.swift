@@ -23,6 +23,26 @@ struct ConversationalReportScreen: View {
     }
 
     var body: some View {
+        ZStack {
+            // Glass-or-paper backdrop spanning the whole sheet — picks
+            // up .glassEffect on iOS 26+ via CardSurface(kind: .sheet).
+            CardSurface(kind: .sheet, radius: 0) { Color.clear }
+                .ignoresSafeArea()
+
+            chatLayout
+        }
+        .task { await begin() }
+        .sheet(isPresented: $switchedToForm) {
+            NavigationStack {
+                ReportScreen(initialFacts: capturedFacts) { id in
+                    switchedToForm = false
+                    onCreated(id)
+                }
+            }
+        }
+    }
+
+    private var chatLayout: some View {
         VStack(spacing: 0) {
             HStack {
                 Button("Cancel") { dismiss() }
@@ -32,7 +52,6 @@ struct ConversationalReportScreen: View {
                 Button("Use the form") { switchedToForm = true }
             }
             .padding()
-            .background(Theme.paper)
 
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 8) {
@@ -50,12 +69,13 @@ struct ConversationalReportScreen: View {
                         }
                     }
                     if case .thinking = fm.state {
-                        Text("…thinking").italic().foregroundStyle(Theme.inkMuted)
+                        Text("…thinking")
+                            .italic()
+                            .foregroundStyle(Theme.inkMuted)
                     }
                 }
                 .padding()
             }
-            .background(Theme.paper)
 
             HStack(spacing: 12) {
                 TextField("Type your message", text: $draft, axis: .vertical)
@@ -70,17 +90,6 @@ struct ConversationalReportScreen: View {
                 .disabled(draft.isEmpty || isThinking)
             }
             .padding()
-            .background(Theme.paper)
-        }
-        .background(Theme.paper)
-        .task { await begin() }
-        .sheet(isPresented: $switchedToForm) {
-            NavigationStack {
-                ReportScreen(initialFacts: capturedFacts) { id in
-                    switchedToForm = false
-                    onCreated(id)
-                }
-            }
         }
     }
 

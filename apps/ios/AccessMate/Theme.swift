@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Warm civic editorial palette — mirrors the design tokens in
 /// packages/shared used by the web app and Android app.
@@ -15,29 +16,54 @@ enum Theme {
     static let emergency    = Color(red: 0.710, green: 0.216, blue: 0.157)
 }
 
-/// A glass-or-paper card surface that uses Apple's `.glassEffect()` on
-/// iOS 26+ and falls back to a tinted paper card on older OS.
+/// Glass tint variants. iOS 26+ swaps these out for SwiftUI's native
+/// `.glassEffect()` modifier; older iOS falls back to a tinted paper
+/// surface.
+enum GlassKind {
+    case card    // section card on a scroll surface
+    case sheet   // root surface of a modal
+    case chrome  // tab bar / nav chrome
+}
+
+/// Glass-or-paper surface that uses Apple's `.glassEffect()` on iOS 26+
+/// and falls back to a tinted paper card on older OS. Reduce
+/// Transparency makes the fallback path active even on iOS 26.
 struct CardSurface<Content: View>: View {
+    let kind: GlassKind
+    let radius: CGFloat
     let content: () -> Content
-    init(@ViewBuilder _ content: @escaping () -> Content) {
+    init(
+        kind: GlassKind = .card,
+        radius: CGFloat = 16,
+        @ViewBuilder _ content: @escaping () -> Content
+    ) {
+        self.kind = kind
+        self.radius = radius
         self.content = content
     }
     var body: some View {
         Group {
-            if #available(iOS 26.0, *) {
+            if #available(iOS 26.0, *), !UIAccessibility.isReduceTransparencyEnabled {
                 content()
                     .padding(16)
-                    .glassEffect(.regular, in: .rect(cornerRadius: 16))
+                    .glassEffect(.regular, in: .rect(cornerRadius: radius))
             } else {
                 content()
                     .padding(16)
-                    .background(Theme.raised)
+                    .background(fallbackBackground)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: radius)
                             .stroke(Theme.hairline, lineWidth: 1)
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .clipShape(RoundedRectangle(cornerRadius: radius))
             }
+        }
+    }
+    private var fallbackBackground: Color {
+        switch kind {
+        case .card:   return Theme.raised
+        case .sheet:  return Theme.paper
+        case .chrome: return Theme.paper
         }
     }
 }
