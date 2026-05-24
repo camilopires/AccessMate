@@ -5,6 +5,7 @@ import OperatorDetail from '../../../app/directory/[id]';
 
 jest.mock('expo-router', () => ({
   useLocalSearchParams: () => ({ id: 'avanti-west-coast' }),
+  useRouter: () => ({ back: () => {}, push: () => {}, replace: () => {} }),
 }));
 
 describe('OperatorDetail', () => {

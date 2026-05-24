@@ -1,6 +1,7 @@
-import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { colors, space } from '../theme';
+import { useRouter } from 'expo-router';
+import { colors, minTapTarget, space, type } from '../theme';
 
 interface Props {
   children: React.ReactNode;
@@ -8,11 +9,28 @@ interface Props {
   scroll?: boolean;
   /** Padding override; defaults to comfortable 20pt edges. */
   pad?: number;
+  /** When true (default), shows a back affordance at the top that calls
+   *  router.back(). Set to false on the home / onboarding screens which
+   *  sit at the top of the stack. */
+  back?: boolean;
 }
 
-export function AppShell({ children, scroll = true, pad = space.lg }: Props) {
+export function AppShell({ children, scroll = true, pad = space.lg, back = true }: Props) {
+  const router = useRouter();
   const inner = (
     <View style={[styles.inner, { paddingHorizontal: pad, paddingBottom: space['3xl'] }]}>
+      {back && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.back, pressed && styles.backPressed]}
+          hitSlop={12}
+        >
+          <Text style={styles.backArrow}>‹</Text>
+          <Text style={styles.backLabel}>Back</Text>
+        </Pressable>
+      )}
       {children}
     </View>
   );
@@ -37,4 +55,23 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg.paper },
   scrollContent: { flexGrow: 1 },
   inner: { paddingTop: space.lg, gap: space.lg },
+  back: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    minHeight: minTapTarget - 16,
+    paddingVertical: space.xs,
+    paddingRight: space.sm,
+    gap: 4,
+    marginLeft: -4,
+  },
+  backPressed: { opacity: 0.55 },
+  backArrow: {
+    ...type.title,
+    color: colors.ink.muted,
+    lineHeight: 28,
+    fontSize: 28,
+    marginTop: -2,
+  },
+  backLabel: { ...type.bodyEmphasis, color: colors.ink.muted },
 });

@@ -79,7 +79,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <AppShell>
+    <AppShell back={false}>
       <AppHeader
         title="Welcome to AccessMate"
         overline={`Setup — Step ${step} of 5`}

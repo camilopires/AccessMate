@@ -34,7 +34,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <AppShell>
+    <AppShell back={false}>
       <AppHeader title="AccessMate" overline={TODAY_LABEL} />
 
       {inProgress.length > 0 && (
