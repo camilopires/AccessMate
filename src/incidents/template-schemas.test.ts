@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ComplaintTemplate } from './schemas';
+import { ComplaintTemplate } from './template-schemas';
 
 describe('ComplaintTemplate schema', () => {
   it('accepts a fully populated template', () => {

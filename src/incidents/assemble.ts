@@ -1,6 +1,6 @@
-import type { Incident } from '../incidents/schemas';
+import type { Incident } from './schemas';
 import type { Profile } from '../profile/schemas';
-import type { ComplaintTemplate } from './schemas';
+import type { ComplaintTemplate } from './template-schemas';
 
 export interface AssembleInput {
   incident: Incident;

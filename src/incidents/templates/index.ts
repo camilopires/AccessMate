@@ -1,4 +1,4 @@
-import { ComplaintTemplate } from '../schemas';
+import { ComplaintTemplate } from '../template-schemas';
 import missedPassengerAssist from './missed-passenger-assist.json';
 import damagedMobilityEquipment from './damaged-mobility-equipment.json';
 import refusedBoardingRail from './refused-boarding-rail.json';
