@@ -6,21 +6,27 @@ export type GlassTint = 'chrome' | 'card' | 'sheet';
 
 interface Props extends ViewProps {
   tint?: GlassTint;
+  cornerRadius?: number;
 }
+
+const DEFAULT_RADIUS: Record<GlassTint, number> = { chrome: 0, card: 12, sheet: 24 };
 
 /**
  * Cross-platform "raised surface" that becomes a true Liquid Glass view
- * on iOS 26+ (via modules/glass-surface/) and a warm-paper fallback on
- * Android / web / older iOS. Respects Reduce Transparency natively.
+ * on iOS 26+ (via modules/glass-surface/, which uses SwiftUI's
+ * `.glassEffect()` modifier) and a warm-paper fallback on Android /
+ * web / older iOS. Respects Reduce Transparency natively.
  */
-export function GlassSurface({ tint = 'card', style, children, ...rest }: Props) {
+export function GlassSurface({ tint = 'card', cornerRadius, style, children, ...rest }: Props) {
+  const radius = cornerRadius ?? DEFAULT_RADIUS[tint];
+
   if (Platform.OS === 'ios') {
     try {
       const NativeGlass = require('../../modules/glass-surface/src').default as React.ComponentType<
-        Props & { tint?: string }
+        Props & { tint?: string; cornerRadius?: number }
       >;
       return (
-        <NativeGlass tint={tint} style={style} {...rest}>
+        <NativeGlass tint={tint} cornerRadius={radius} style={style} {...rest}>
           {children}
         </NativeGlass>
       );
@@ -30,13 +36,13 @@ export function GlassSurface({ tint = 'card', style, children, ...rest }: Props)
     }
   }
   return (
-    <View style={[paperFallback(tint), style]} {...rest}>
+    <View style={[paperFallback(tint, radius), style]} {...rest}>
       {children}
     </View>
   );
 }
 
-function paperFallback(tint: GlassTint): ViewStyle {
+function paperFallback(tint: GlassTint, radius: number): ViewStyle {
   if (tint === 'chrome') {
     return {
       backgroundColor: colors.bg.paper,
@@ -45,7 +51,7 @@ function paperFallback(tint: GlassTint): ViewStyle {
     };
   }
   if (tint === 'sheet') {
-    return { backgroundColor: colors.bg.raised };
+    return { backgroundColor: colors.bg.raised, borderRadius: radius };
   }
-  return { backgroundColor: colors.bg.raised, borderRadius: 12 };
+  return { backgroundColor: colors.bg.raised, borderRadius: radius };
 }

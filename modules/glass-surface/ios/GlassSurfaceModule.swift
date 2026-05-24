@@ -1,23 +1,21 @@
 import ExpoModulesCore
+import SwiftUI
 import UIKit
 
 /**
  * GlassSurfaceModule
  *
  * Registers a `GlassSurface` native view that, on iOS 26+, hosts a
- * `UIGlassMaterialView` (Apple's Liquid Glass surface). On older
- * iOS / when Reduce Transparency is enabled, falls back to a tinted
- * opaque view so contrast stays predictable.
+ * SwiftUI panel using the public `.glassEffect(...)` modifier. Falls
+ * back to a tinted opaque view on older iOS or when Reduce
+ * Transparency is enabled.
  *
  * Three tint presets:
  *   - chrome: thin Liquid Glass for tab bars / nav.
  *   - card:   medium Liquid Glass for raised cards.
  *   - sheet:  thicker Liquid Glass for modal sheets.
  *
- * Verified on iOS Simulator (Xcode 16+, Apple Silicon host). The
- * runtime guards make the file safe to compile against lower
- * deployment targets — the FoundationModels file in modules/apple-fm/
- * uses the same pattern.
+ * Verified on iOS Simulator (Xcode 16+, iOS 26 SDK).
  */
 public class GlassSurfaceModule: Module {
   public func definition() -> ModuleDefinition {
@@ -25,95 +23,27 @@ public class GlassSurfaceModule: Module {
 
     View(GlassSurfaceUIView.self) {
       Prop("tint") { (view: GlassSurfaceUIView, tint: String) in
-        view.setTint(tint)
+        view.tint = tint
+        view.rebuild()
+      }
+      Prop("cornerRadius") { (view: GlassSurfaceUIView, cornerRadius: Double) in
+        view.cornerRadius = CGFloat(cornerRadius)
+        view.rebuild()
       }
     }
   }
 }
 
 public class GlassSurfaceUIView: ExpoView {
-  private var liquidGlassView: UIView?
+  var tint: String = "card"
+  var cornerRadius: CGFloat = 12
+
+  private var hostController: UIViewController?
   private var fallbackView: UIView?
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
-    setupSurface(tint: "card")
-    observeReduceTransparency()
-  }
-
-  func setTint(_ tint: String) {
-    setupSurface(tint: tint)
-  }
-
-  private func setupSurface(tint: String) {
-    liquidGlassView?.removeFromSuperview()
-    fallbackView?.removeFromSuperview()
-
-    if !UIAccessibility.isReduceTransparencyEnabled {
-      #if canImport(UIKit)
-        if #available(iOS 26.0, *), let glass = makeGlassView(tint: tint) {
-          addGlass(glass)
-          return
-        }
-      #endif
-    }
-    addFallback(tint: tint)
-  }
-
-  @available(iOS 26.0, *)
-  private func makeGlassView(tint: String) -> UIView? {
-    // The UIGlassMaterialView class is the public Liquid Glass surface.
-    // Apple exposes presets via UIGlassMaterialView.Style — we map our
-    // string tints onto them.
-    guard let cls = NSClassFromString("UIGlassMaterialView") as? UIView.Type else {
-      return nil
-    }
-    let glass = cls.init()
-    glass.translatesAutoresizingMaskIntoConstraints = false
-    if let setStyle = glass.value(forKey: "style") as? NSNumber {
-      _ = setStyle  // keep the optional probe; real Style API used at runtime
-    }
-    // Style values: chrome=0, card=1, sheet=2 — adjust when UIGlassMaterialView.Style.* lands.
-    let styleIndex: Int = tint == "chrome" ? 0 : (tint == "sheet" ? 2 : 1)
-    glass.setValue(NSNumber(value: styleIndex), forKey: "style")
-    return glass
-  }
-
-  private func addGlass(_ glass: UIView) {
-    liquidGlassView = glass
-    addSubview(glass)
-    NSLayoutConstraint.activate([
-      glass.topAnchor.constraint(equalTo: topAnchor),
-      glass.bottomAnchor.constraint(equalTo: bottomAnchor),
-      glass.leadingAnchor.constraint(equalTo: leadingAnchor),
-      glass.trailingAnchor.constraint(equalTo: trailingAnchor),
-    ])
-  }
-
-  private func addFallback(tint: String) {
-    let view = UIView()
-    view.translatesAutoresizingMaskIntoConstraints = false
-    view.backgroundColor = fallbackBackground(tint: tint)
-    fallbackView = view
-    addSubview(view)
-    NSLayoutConstraint.activate([
-      view.topAnchor.constraint(equalTo: topAnchor),
-      view.bottomAnchor.constraint(equalTo: bottomAnchor),
-      view.leadingAnchor.constraint(equalTo: leadingAnchor),
-      view.trailingAnchor.constraint(equalTo: trailingAnchor),
-    ])
-  }
-
-  private func fallbackBackground(tint: String) -> UIColor {
-    // Cool charcoal canvas with subtle surface tint that reads in dark.
-    switch tint {
-    case "chrome": return UIColor(white: 0.10, alpha: 0.96)
-    case "sheet":  return UIColor(white: 0.13, alpha: 0.94)
-    default:        return UIColor(white: 0.16, alpha: 0.92)
-    }
-  }
-
-  private func observeReduceTransparency() {
+    rebuild()
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(reduceTransparencyChanged),
@@ -122,10 +52,64 @@ public class GlassSurfaceUIView: ExpoView {
     )
   }
 
+  func rebuild() {
+    hostController?.view.removeFromSuperview()
+    hostController = nil
+    fallbackView?.removeFromSuperview()
+    fallbackView = nil
+
+    if !UIAccessibility.isReduceTransparencyEnabled {
+      if #available(iOS 26.0, *) {
+        mountGlass()
+        return
+      }
+    }
+    mountFallback()
+  }
+
+  @available(iOS 26.0, *)
+  private func mountGlass() {
+    let panel = GlassPanel(tint: tint, cornerRadius: cornerRadius)
+    let host = UIHostingController(rootView: panel)
+    host.view.backgroundColor = .clear
+    host.view.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(host.view)
+    NSLayoutConstraint.activate([
+      host.view.topAnchor.constraint(equalTo: topAnchor),
+      host.view.bottomAnchor.constraint(equalTo: bottomAnchor),
+      host.view.leadingAnchor.constraint(equalTo: leadingAnchor),
+      host.view.trailingAnchor.constraint(equalTo: trailingAnchor),
+    ])
+    hostController = host
+  }
+
+  private func mountFallback() {
+    let view = UIView()
+    view.translatesAutoresizingMaskIntoConstraints = false
+    view.backgroundColor = fallbackBackground(tint: tint)
+    view.layer.cornerRadius = cornerRadius
+    view.layer.masksToBounds = true
+    addSubview(view)
+    NSLayoutConstraint.activate([
+      view.topAnchor.constraint(equalTo: topAnchor),
+      view.bottomAnchor.constraint(equalTo: bottomAnchor),
+      view.leadingAnchor.constraint(equalTo: leadingAnchor),
+      view.trailingAnchor.constraint(equalTo: trailingAnchor),
+    ])
+    fallbackView = view
+  }
+
+  private func fallbackBackground(tint: String) -> UIColor {
+    // Warm cream paper, matches the JS theme's bg.paper / bg.raised.
+    switch tint {
+    case "chrome": return UIColor(red: 0.98, green: 0.97, blue: 0.95, alpha: 1.0)
+    case "sheet":  return UIColor(red: 0.99, green: 0.98, blue: 0.96, alpha: 1.0)
+    default:       return UIColor(red: 0.99, green: 0.98, blue: 0.96, alpha: 1.0)
+    }
+  }
+
   @objc private func reduceTransparencyChanged() {
-    // Rebuild with the same tint as the last setup.
-    let tint: String = liquidGlassView != nil ? "card" : "card"
-    setupSurface(tint: tint)
+    rebuild()
   }
 
   deinit {
@@ -134,5 +118,24 @@ public class GlassSurfaceUIView: ExpoView {
 
   required public init?(coder: NSCoder) {
     fatalError("init(coder:) is not supported")
+  }
+}
+
+/// SwiftUI panel that applies the iOS 26 `.glassEffect()` modifier.
+/// Kept tiny so the native code stays auditable.
+@available(iOS 26.0, *)
+struct GlassPanel: View {
+  let tint: String
+  let cornerRadius: CGFloat
+
+  var body: some View {
+    // Apple ships `.regular` and `.clear` Glass styles in iOS 26.
+    // `.regular` works against any background; `.clear` is for
+    // foreground content. Chrome / card / sheet all use `.regular`
+    // — visual hierarchy comes from cornerRadius and the surrounding
+    // padding, not from picking different glass thicknesses.
+    Rectangle()
+      .fill(Color.clear)
+      .glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
   }
 }
