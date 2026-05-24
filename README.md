@@ -98,19 +98,37 @@ Operator address verification log: `docs/operators-verification.md`.
 
 ---
 
-## Migration notes (v0.3.0 → v0.4.0)
+## v0.5.0 — what's new
 
-The v0.3.0 React Native + Expo codebase has been **removed**. It still lives in the git history under tag `v0.3.0` for reference. Everything that mattered (data model, operator dataset, scenario templates, draft assembly logic, design tokens) was lifted into `packages/shared` and re-implemented natively in each app.
+| | | |
+|---|---|---|
+| **Bun-managed workspace** | replaces pnpm | scripts now `bun --filter ...`, lockfile is `bun.lock` |
+| **Parity tests** | byte-identical `assembleDraft` across web / iOS / Android | one canonical JSON fixture in `packages/shared/test-fixtures/draft-cases.json`; bun:test, XCTest, JUnit all consume it |
+| **Web: bun:test + Playwright/axe** | 13 unit + 5 e2e | green, WCAG 2.2 AA clean |
+| **iOS: conversational AI Report intake** | iOS 26+ Apple Foundation Models | chat UI, `@Generable` capture of facts, "Use the form" hand-off preserves what's been said |
+| **iOS: full Liquid Glass** | sheets + cards | `CardSurface` now exposes `card / sheet / chrome` variants; Reduce Transparency falls back live |
+| **PDF export** | iOS / Android / web | `ImageRenderer → PDF` on iOS, `PdfDocument` on Android, `window.print()` with a print stylesheet on web |
+| **8-week escalate reminders** | iOS + Android | `UNUserNotificationCenter` and `WorkManager` respectively; cancelled when an incident is marked resolved |
 
-What is **not** ported in v0.4.0:
+Tests at v0.5.0: **20 across the three platforms (13 web bun:test + 5 Playwright/axe + 1 iOS parity XCTest + 1 Android parity JUnit)**. iOS / Android require a local toolchain to verify (`xcodegen generate && open AccessMate.xcodeproj` and `./gradlew :app:testDebugUnitTest` respectively).
 
-- **Conversational AI Report intake** (was iOS-only via Apple FoundationModels in v0.3). The native iOS app will get its own SwiftUI implementation in a future release; the template form is the only flow currently shipping on iOS.
-- **Liquid Glass adoption** on iOS is partial — the section cards use `.glassEffect()` automatically on iOS 26+, but the tab bar and modal sheet chrome are stock SwiftUI rather than custom-glass.
-- **PDF export** of incidents (used `expo-print` in v0.3). Web supports browser print; iOS / Android pending.
-- **Push reminders** on stalled incidents (used `expo-notifications` in v0.3).
-- **Tests** — only `DraftBuilder` has parity tests right now. Web has no automated test suite yet.
+What's **not** in v0.5:
 
-These are tracked as v0.5 milestones.
+- **Web push notifications** — needs a service worker + a server endpoint to subscribe. Tracked as v0.6.
+- **Apple Intelligence on iOS < 26** — Foundation Models is iOS 26.0+; older iOS gracefully falls back to the template form.
+- **Conversational AI on Android** — Gemini Nano / AICore is still rolling out unevenly across OEM builds; once `MLKit GenAI` ships a stable surface the same chat UI can be added.
+
+---
+
+## History
+
+- **v0.5.0 — Bun + feature parity** _(current)_. Conversational AI on iOS, full Liquid Glass, PDF export, push reminders, parity tests.
+- **v0.4.0 — Monorepo cut**. Three native apps replace React Native + Expo.
+- **v0.3.0 — RN final**. Liquid Glass adopted in RN, 20 operators, onboarding folded into Passport.
+- **v0.2.0 — RN scope cut**. Three pillars (Incidents · Passport · Settings).
+- **v0.1.0 — Initial RN prototype**.
+
+The v0.3.0 React Native build lives under tag `v0.3.0` for reference.
 
 ---
 

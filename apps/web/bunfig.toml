@@ -1,2 +1,4 @@
 [test]
 preload = ["./test/preload.ts"]
+# Playwright lives in e2e/ and uses its own runner; keep bun test out of it.
+root = "./test"
